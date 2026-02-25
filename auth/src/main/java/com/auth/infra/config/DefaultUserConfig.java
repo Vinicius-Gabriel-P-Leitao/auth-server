@@ -7,10 +7,11 @@
  */
 package com.auth.infra.config;
 
-import com.auth.data.model.User;
-import com.auth.data.repository.UserRepository;
-import com.auth.domain.http.dto.RegisterRequestDto;
-import com.auth.domain.service.user.UserService;
+import com.auth.api.dto.RegisterRequestDto;
+import com.auth.application.service.UserService;
+import com.auth.domain.model.Role;
+import com.auth.domain.model.User;
+import com.auth.domain.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -33,9 +34,12 @@ public class DefaultUserConfig {
 
                 admin.setUserName(adminUsername);
                 admin.setPassword(adminPassword);
-                admin.setRole(ServerSecurityConfig.Role.ADMIN);
+                admin.setRole(Role.ADMIN);
 
-                RegisterRequestDto registerRequestDTO = new RegisterRequestDto(admin.getUsername(), admin.getPassword(), admin.getRole());
+                RegisterRequestDto registerRequestDTO = new RegisterRequestDto(
+                        admin.getUsername(), admin.getPassword(), admin.getRole()
+                );
+
                 userService.userRegister(registerRequestDTO);
             }
         };
