@@ -10,6 +10,8 @@ package com.auth.infra.security.config;
 import com.auth.application.service.CustomUserDetailsService;
 import com.auth.domain.model.Role;
 import com.auth.infra.security.filter.JwtAuthenticationFilter;
+import com.auth.infra.security.handler.CustomAccessDeniedHandler;
+import com.auth.infra.security.handler.CustomAuthenticationEntryPoint;
 import com.auth.infra.security.service.JwtGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,8 @@ public class ServerSecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtGeneratorService jwtGeneratorService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -35,11 +39,16 @@ public class ServerSecurityConfig {
 
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .authorizeHttpRequests((matcherRegistry) -> {
                     matcherRegistry
                             .requestMatchers("/v1/user/login").permitAll()
+                            .requestMatchers("/v1/user/**").authenticated()
                             .requestMatchers("/v1/user/register").hasRole(Role.ADMIN.name())
-                            .anyRequest().authenticated();
+                            .anyRequest().permitAll();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

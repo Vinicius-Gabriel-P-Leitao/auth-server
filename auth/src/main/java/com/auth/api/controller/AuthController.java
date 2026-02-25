@@ -15,7 +15,6 @@ import com.auth.application.usecase.LoginUseCase;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,12 +32,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto loginRequest) {
-        try {
-            AuthenticationResponseDto response = loginUseCase.execute(loginRequest);
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException exception) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        AuthenticationResponseDto response = loginUseCase.execute(loginRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
