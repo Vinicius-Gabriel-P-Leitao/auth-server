@@ -18,21 +18,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
+    private static final String SECURITY_SCHEME_NAME = "bearerAuth";
+    private static final String API_TITLE = "Auth API";
+    private static final String API_VERSION = "1.0";
+    private static final String API_DESCRIPTION = "API de Autenticação com JWT e UUIDv7";
+
     @Bean
     public OpenAPI customOpenAPI() {
-        final String securitySchemeName = "bearerAuth";
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Auth API")
-                        .version("1.0")
-                        .description("API de Autenticação com JWT e UUIDv7"))
-                .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
-                .components(new Components()
-                        .addSecuritySchemes(securitySchemeName,
-                                new SecurityScheme()
-                                        .name(securitySchemeName)
-                                        .type(SecurityScheme.Type.HTTP)
-                                        .scheme("bearer")
-                                        .bearerFormat("JWT")));
+        return new OpenAPI().info(createApiInfo())
+                .addSecurityItem(createSecurityRequirement()).components(createComponents());
+    }
+
+    private Info createApiInfo() {
+        return new Info().title(API_TITLE).version(API_VERSION).description(API_DESCRIPTION);
+    }
+
+    private SecurityRequirement createSecurityRequirement() {
+        return new SecurityRequirement().addList(SECURITY_SCHEME_NAME);
+    }
+
+    private Components createComponents() {
+        return new Components().addSecuritySchemes(SECURITY_SCHEME_NAME, createSecurityScheme());
+    }
+
+    private SecurityScheme createSecurityScheme() {
+        return new SecurityScheme().name(SECURITY_SCHEME_NAME)
+                .type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT");
     }
 }

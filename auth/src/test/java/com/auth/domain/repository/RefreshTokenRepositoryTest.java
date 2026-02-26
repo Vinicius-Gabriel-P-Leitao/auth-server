@@ -53,7 +53,7 @@ class RefreshTokenRepositoryTest {
         Optional<RefreshToken> found = refreshTokenRepository.findByToken("my-unique-token");
 
         assertTrue(found.isPresent());
-        assertEquals("owner@example.com", found.get().getUser().getUsername());
+        assertEquals("token-owner", found.get().getUser().getUsername());
     }
 
     @Test

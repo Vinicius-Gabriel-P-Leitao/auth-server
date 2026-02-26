@@ -35,7 +35,6 @@ public class DefaultUserConfig {
                 RegisterRequestDto registerRequestDTO = new RegisterRequestDto(
                         adminUsername, adminEmail, adminPassword);
 
-                // Usa o UserService diretamente para persistir o usuário sem gerar tokens JWT/Refresh
                 userService.userRegister(registerRequestDTO, Role.ADMIN);
             }
         };

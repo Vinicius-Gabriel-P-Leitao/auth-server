@@ -35,7 +35,7 @@ public class PasswordUseCase {
      */
     public void changePassword(Authentication authentication, ChangePasswordRequestDto request) {
         User user = getUserFromAuth(authentication);
-        user = userService.userIsPresent(user.getUsername());
+        user = userService.userIsPresent(user.getEmail());
 
         if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
             throw new BadRequestException(ErrorCode.BAD_REQUEST, "A senha atual informada está incorreta.");
@@ -51,7 +51,7 @@ public class PasswordUseCase {
      */
     public void changeFirstPassword(Authentication authentication, FirstChangePasswordRequestDto request) {
         User user = getUserFromAuth(authentication);
-        user = userService.userIsPresent(user.getUsername());
+        user = userService.userIsPresent(user.getEmail());
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         user.setPasswordResetRequired(false); // Limpa a flag

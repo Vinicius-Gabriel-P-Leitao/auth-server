@@ -9,7 +9,11 @@ package com.auth.domain.model;
 
 import com.auth.infra.config.jpa.GeneratedUuidV7;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -21,12 +25,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -52,12 +50,12 @@ public class User implements UserDetails {
     @Column(name = "ds_user_password", nullable = false)
     private String password;
 
-    @Column(name = "ds_user_role")
     @Enumerated(EnumType.STRING)
+    @Column(name = "ds_user_role")
     private Role role;
 
     @Column(name = "bl_active")
-    private final Boolean active = true;
+    private Boolean active = true;
 
     @Column(name = "bl_password_reset_required")
     private Boolean passwordResetRequired = false;
@@ -83,31 +81,27 @@ public class User implements UserDetails {
     @NonNull
     @Override
     public String getUsername() {
-        return this.email;
-    }
-
-    public String getUserName() {
         return this.userName;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return active != null && active;
+        return active;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return active != null && active;
+        return active;
+    }
+
+    public boolean isPasswordResetRequired() {
+        return passwordResetRequired != null && passwordResetRequired;
     }
 
     public Instant getCreatedAt() {
         if (userId == null) return null;
         long timestamp = userId.getMostSignificantBits() >>> 16;
         return Instant.ofEpochMilli(timestamp);
-    }
-
-    public boolean isPasswordResetRequired() {
-        return passwordResetRequired != null && passwordResetRequired;
     }
 
     public Integer getTokenVersion() {

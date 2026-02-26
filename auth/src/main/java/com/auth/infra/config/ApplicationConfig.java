@@ -34,7 +34,7 @@ public class ApplicationConfig {
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, true);
         mapper.setTimeZone(TimeZone.getTimeZone("America/Sao_Paulo"));
-        
+
         return mapper;
     }
 

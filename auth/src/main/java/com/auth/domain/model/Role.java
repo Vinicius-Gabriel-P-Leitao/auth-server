@@ -15,10 +15,14 @@ import lombok.Getter;
  */
 @Getter
 public enum Role {
-    /** Cargo com permissões totais, incluindo reset de senhas e criação de outros admins. */
+    /**
+     * Cargo com permissões totais, incluindo reset de senhas e criação de outros admins.
+     */
     ADMIN("ADMIN"),
-    
-    /** Cargo de usuário padrão, com acesso limitado às suas próprias informações. */
+
+    /**
+     * Cargo de usuário padrão, com acesso limitado às suas próprias informações.
+     */
     USER("USER");
 
     private final String role;

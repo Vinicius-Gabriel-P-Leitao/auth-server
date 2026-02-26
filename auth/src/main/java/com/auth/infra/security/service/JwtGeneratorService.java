@@ -8,19 +8,15 @@
 package com.auth.infra.security.service;
 
 import com.auth.domain.model.User;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,15 +59,16 @@ public class JwtGeneratorService {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        // Adiciona a versão do token no payload
+
+        // NOTE: Versão do token
         claims.put("v", user.getTokenVersion());
-        return buildToken(claims, user, jwtExpiration);
+        return buildToken(claims, user.getEmail(), jwtExpiration);
     }
 
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+    private String buildToken(Map<String, Object> extraClaims, String email, long expiration) {
         return Jwts.builder()
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
+                .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
@@ -86,7 +83,8 @@ public class JwtGeneratorService {
         // 1. O e-mail bater
         // 2. A versão no token for IGUAL à versão no banco
         // 3. Não estiver expirado
-        return (email.equals(user.getUsername())) && (version != null && version.equals(user.getTokenVersion())) && !isTokenExpired(token);
+        return (email.equals(user.getEmail())) && (version != null
+                && version.equals(user.getTokenVersion())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

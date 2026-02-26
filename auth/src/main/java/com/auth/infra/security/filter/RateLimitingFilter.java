@@ -60,14 +60,8 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     }
 
     private Bucket createNewBucket(String ip) {
-        Bandwidth limit = Bandwidth.builder()
-                .capacity(10)
-                .refillGreedy(10, Duration.ofMinutes(1))
-                .build();
-        
-        return Bucket.builder()
-                .addLimit(limit)
-                .build();
+        Bandwidth limit = Bandwidth.builder().capacity(10).refillGreedy(10, Duration.ofMinutes(1)).build();
+        return Bucket.builder().addLimit(limit).build();
     }
 
     private void sendRateLimitErrorResponse(HttpServletResponse response) throws IOException {
@@ -79,7 +73,6 @@ public class RateLimitingFilter extends OncePerRequestFilter {
                 .code(HttpStatus.TOO_MANY_REQUESTS.value())
                 .timestamp(new Date())
                 .build();
-
         response.getWriter().write(objectMapper.writeValueAsString(error));
     }
 
@@ -88,6 +81,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
         if (xfHeader == null || xfHeader.isEmpty()) {
             return request.getRemoteAddr();
         }
+
         return xfHeader.split(",")[0];
     }
 }

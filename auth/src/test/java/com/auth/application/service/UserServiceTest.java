@@ -51,7 +51,7 @@ class UserServiceTest {
         User saved = userService.userRegister(request, Role.USER);
 
         assertNotNull(saved);
-        assertEquals("john", saved.getUserName());
+        assertEquals("john", saved.getUsername());
         assertEquals("john@example.com", saved.getEmail());
         assertEquals("hashed", saved.getPassword());
         verify(userRepository).save(any());

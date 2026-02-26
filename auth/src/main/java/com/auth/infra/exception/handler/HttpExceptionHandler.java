@@ -9,7 +9,7 @@ package com.auth.infra.exception.handler;
 
 import com.auth.infra.exception.DataObjectError;
 import com.auth.infra.exception.base.AppException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +23,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Manipulador global de exceções da API.
@@ -57,7 +55,6 @@ public class HttpExceptionHandler {
         });
 
         log.warn("Erro de validação em {} campos: {}", errors.size(), errors);
-
         DataObjectError error = DataObjectError.builder()
                 .message("Erro de validação nos campos informados")
                 .code(HttpStatus.BAD_REQUEST.value())

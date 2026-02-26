@@ -43,9 +43,8 @@ class UserRepositoryTest {
 
         assertTrue(foundByName.isPresent());
         assertTrue(foundByEmail.isPresent());
-        assertEquals("db-user", foundByName.get().getUserName());
+        assertEquals("db-user", foundByName.get().getUsername());
         assertEquals("db@example.com", foundByEmail.get().getEmail());
-        assertEquals("db@example.com", foundByEmail.get().getUsername());
         assertNotNull(foundByName.get().getUserId());
     }
 

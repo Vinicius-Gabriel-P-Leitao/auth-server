@@ -18,12 +18,10 @@ import com.auth.domain.model.User;
 import com.auth.infra.exception.ErrorCode;
 import com.auth.infra.exception.custom.BadRequestException;
 import com.auth.infra.security.service.JwtGeneratorService;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * Caso de Uso responsável pelo registro de novos usuários.
@@ -38,13 +36,14 @@ public class RegisterUseCase {
 
     public AuthenticationResponseDto execute(RegisterRequestDto request, Role role) {
         User user = Optional.ofNullable(userService.userRegister(request, role))
-                .orElseThrow(() -> new BadRequestException(ErrorCode.INTERNAL_SERVER_ERROR, "Erro ao registrar usuário"));
+                .orElseThrow(() -> new BadRequestException(
+                        ErrorCode.INTERNAL_SERVER_ERROR, "Erro ao registrar usuário"));
 
         String jwt = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         MetadataUserResponseDto metadata = MetadataUserResponseDto.builder()
-                .username(user.getUserName())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .active(user.getActive() != null && user.getActive())
