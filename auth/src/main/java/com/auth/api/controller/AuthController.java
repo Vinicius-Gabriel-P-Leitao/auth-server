@@ -7,10 +7,10 @@
  */
 package com.auth.api.controller;
 
-import com.auth.api.dto.AuthenticationRequestDto;
-import com.auth.api.dto.AuthenticationResponseDto;
-import com.auth.api.dto.MetadataUserResponseDto;
-import com.auth.api.dto.RefreshTokenRequestDto;
+import com.auth.api.dto.auth.AuthenticationRequestDto;
+import com.auth.api.dto.auth.AuthenticationResponseDto;
+import com.auth.api.dto.auth.MetadataUserResponseDto;
+import com.auth.api.dto.token.RefreshTokenRequestDto;
 import com.auth.application.usecase.LoginUseCase;
 import com.auth.application.usecase.RefreshTokenUseCase;
 import com.auth.application.usecase.ValidationUseCase;

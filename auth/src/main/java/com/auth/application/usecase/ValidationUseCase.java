@@ -7,7 +7,7 @@
  */
 package com.auth.application.usecase;
 
-import com.auth.api.dto.MetadataUserResponseDto;
+import com.auth.api.dto.auth.MetadataUserResponseDto;
 import com.auth.domain.model.User;
 import com.auth.infra.exception.ErrorCode;
 import com.auth.infra.exception.custom.BadRequestException;

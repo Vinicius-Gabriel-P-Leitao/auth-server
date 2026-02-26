@@ -5,7 +5,7 @@
  * Licensed under the BSD 3-Clause License.
  * See LICENSE file in the project root for full license information.
  */
-package com.auth.api.dto;
+package com.auth.api.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record RegisterRequestDto(
+public record AuthenticationRequestDto(
         @Size(min = 3, max = 30, message = "O nome de usuário deve ter entre 3 e 30 caracteres")
         @NotBlank(message = "O nome de usuário não pode estar em branco")
         @JsonProperty("username")

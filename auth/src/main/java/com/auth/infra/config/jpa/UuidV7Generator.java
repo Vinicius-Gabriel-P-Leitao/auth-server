@@ -7,7 +7,7 @@
  */
 package com.auth.infra.config.jpa;
 
-import com.auth.infra.security.service.UuidUtils;
+import com.auth.infra.security.service.UuidV7Service;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentifierGenerator;
 
@@ -20,6 +20,6 @@ public class UuidV7Generator implements IdentifierGenerator {
 
     @Override
     public Serializable generate(SharedSessionContractImplementor session, Object object) {
-        return UuidUtils.randomV7();
+        return UuidV7Service.randomV7();
     }
 }

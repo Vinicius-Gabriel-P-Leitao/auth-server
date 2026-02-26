@@ -7,9 +7,9 @@
  */
 package com.auth.application.usecase;
 
-import com.auth.api.dto.AuthenticationResponseDto;
-import com.auth.api.dto.MetadataUserResponseDto;
-import com.auth.api.dto.RegisterRequestDto;
+import com.auth.api.dto.auth.AuthenticationResponseDto;
+import com.auth.api.dto.auth.MetadataUserResponseDto;
+import com.auth.api.dto.auth.RegisterRequestDto;
 import com.auth.application.service.RefreshTokenService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.RefreshToken;

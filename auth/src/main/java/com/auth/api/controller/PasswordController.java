@@ -7,9 +7,9 @@
  */
 package com.auth.api.controller;
 
-import com.auth.api.dto.ChangePasswordRequestDto;
-import com.auth.api.dto.FirstChangePasswordRequestDto;
-import com.auth.api.dto.ResetPasswordRequestDto;
+import com.auth.api.dto.password.ChangePasswordRequestDto;
+import com.auth.api.dto.password.FirstChangePasswordRequestDto;
+import com.auth.api.dto.password.ResetPasswordRequestDto;
 import com.auth.application.usecase.PasswordUseCase;
 
 import jakarta.validation.Valid;

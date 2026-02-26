@@ -7,8 +7,8 @@
  */
 package com.auth.api.controller;
 
-import com.auth.api.dto.AuthenticationResponseDto;
-import com.auth.api.dto.RegisterRequestDto;
+import com.auth.api.dto.auth.AuthenticationResponseDto;
+import com.auth.api.dto.auth.RegisterRequestDto;
 import com.auth.application.usecase.RegisterUseCase;
 import com.auth.domain.model.Role;
 import jakarta.validation.Valid;

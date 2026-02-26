@@ -7,7 +7,7 @@
  */
 package com.auth.application.service;
 
-import com.auth.api.dto.RegisterRequestDto;
+import com.auth.api.dto.auth.RegisterRequestDto;
 import com.auth.domain.model.Role;
 import com.auth.domain.model.User;
 import com.auth.domain.repository.UserRepository;

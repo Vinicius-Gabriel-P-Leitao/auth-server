@@ -7,9 +7,9 @@
  */
 package com.auth.application.usecase;
 
-import com.auth.api.dto.ChangePasswordRequestDto;
-import com.auth.api.dto.FirstChangePasswordRequestDto;
-import com.auth.api.dto.ResetPasswordRequestDto;
+import com.auth.api.dto.password.ChangePasswordRequestDto;
+import com.auth.api.dto.password.FirstChangePasswordRequestDto;
+import com.auth.api.dto.password.ResetPasswordRequestDto;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.User;
 import com.auth.domain.repository.UserRepository;
@@ -21,8 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
