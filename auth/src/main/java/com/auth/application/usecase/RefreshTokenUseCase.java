@@ -9,49 +9,49 @@ package com.auth.application.usecase;
 
 import com.auth.api.dto.AuthenticationResponseDto;
 import com.auth.api.dto.MetadataUserResponseDto;
-import com.auth.api.dto.RegisterRequestDto;
+import com.auth.api.dto.RefreshTokenRequestDto;
 import com.auth.application.service.RefreshTokenService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.RefreshToken;
-import com.auth.domain.model.Role;
 import com.auth.domain.model.User;
-import com.auth.infra.exception.ErrorCode;
-import com.auth.infra.exception.custom.BadRequestException;
 import com.auth.infra.security.service.JwtGeneratorService;
 
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RegisterUseCase {
+public class RefreshTokenUseCase {
 
-    private final UserService userService;
-    private final JwtGeneratorService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final JwtGeneratorService jwtService;
+    private final UserService userService;
 
-    public AuthenticationResponseDto execute(RegisterRequestDto request, Role role) {
-        User user = Optional.ofNullable(userService.userRegister(request, role))
-                .orElseThrow(() -> new BadRequestException(ErrorCode.INTERNAL_SERVER_ERROR, "Erro ao registrar usuário"));
+    public AuthenticationResponseDto execute(RefreshTokenRequestDto request) {
+        RefreshToken token = refreshTokenService.findByToken(request.refreshToken());
+        refreshTokenService.verifyExpiration(token);
+
+        User user = token.getUser();
+
+        // Invalida o Access Token antigo
+        userService.incrementTokenVersion(user);
 
         String jwt = jwtService.generateToken(user);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        // NOTE: Gera um novo refresh token e descarta o atual (Rotation)
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
         MetadataUserResponseDto metadata = MetadataUserResponseDto.builder()
                 .username(user.getUsername())
                 .role(user.getRole() != null ? user.getRole().name() : null)
-                .active(user.getActive() != null && user.getActive())
+                .active(user.getActive())
                 .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt() != null ? user.getUpdatedAt() : user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
 
         return AuthenticationResponseDto.builder()
                 .token(jwt)
-                .refreshToken(refreshToken.getToken())
-                .passwordResetRequired(user.isPasswordResetRequired())
+                .refreshToken(newRefreshToken.getToken())
                 .metadata(metadata)
                 .build();
     }

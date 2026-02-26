@@ -8,7 +8,7 @@
 package com.auth.infra.config;
 
 import com.auth.api.dto.RegisterRequestDto;
-import com.auth.application.usecase.RegisterUseCase;
+import com.auth.application.service.UserService;
 import com.auth.domain.model.Role;
 import com.auth.domain.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,13 +25,15 @@ public class DefaultUserConfig {
     private String adminPassword;
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepository userRepository, RegisterUseCase registerUseCase) {
+    public CommandLineRunner commandLineRunner(UserRepository userRepository, UserService userService) {
         return args -> {
+            // Verifica se o admin já existe para evitar duplicidade
             if (userRepository.findByUserName(adminUsername).isEmpty()) {
                 RegisterRequestDto registerRequestDTO = new RegisterRequestDto(
                         adminUsername, adminPassword);
 
-                registerUseCase.execute(registerRequestDTO, Role.ADMIN);
+                // Usa o UserService diretamente para persistir o usuário sem gerar tokens JWT/Refresh
+                userService.userRegister(registerRequestDTO, Role.ADMIN);
             }
         };
     }

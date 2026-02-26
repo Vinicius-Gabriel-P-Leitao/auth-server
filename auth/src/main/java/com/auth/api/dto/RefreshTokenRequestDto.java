@@ -8,13 +8,13 @@
 package com.auth.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-public record AuthenticationResponseDto(
-        @JsonProperty("token") String token, 
-        @JsonProperty("refresh_token") String refreshToken,
-        @JsonProperty("password_reset_required") boolean passwordResetRequired,
-        @JsonProperty("metadata") MetadataUserResponseDto metadata
+public record RefreshTokenRequestDto(
+        @NotBlank(message = "O refresh token não pode estar em branco")
+        @JsonProperty("refresh_token")
+        String refreshToken
 ) {
 }

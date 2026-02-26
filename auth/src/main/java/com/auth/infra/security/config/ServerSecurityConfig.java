@@ -13,7 +13,9 @@ import com.auth.infra.security.filter.JwtAuthenticationFilter;
 import com.auth.infra.security.handler.CustomAccessDeniedHandler;
 import com.auth.infra.security.handler.CustomAuthenticationEntryPoint;
 import com.auth.infra.security.service.JwtGeneratorService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,7 +48,10 @@ public class ServerSecurityConfig {
                 .authorizeHttpRequests((matcherRegistry) -> {
                     matcherRegistry
                             .requestMatchers("/v1/user/login").permitAll()
+                            .requestMatchers("/v1/user/refresh").permitAll()
                             .requestMatchers("/v1/user/register").permitAll()
+                            .requestMatchers("/v1/password/admin-reset").hasRole(Role.ADMIN.name())
+                            .requestMatchers("/v1/password/first-change").authenticated()
                             .requestMatchers("/v1/user/validate").authenticated()
                             .requestMatchers("/v1/user/register/admin").hasRole(Role.ADMIN.name())
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()

@@ -37,6 +37,7 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.webmvc)
     implementation(libs.springdoc.openapi)
+    implementation(libs.bucket4j.core)
     implementation(libs.flyway.database.postgresql)
     implementation(libs.jjwt.api)
     runtimeOnly(libs.jjwt.impl)

@@ -28,7 +28,7 @@ public class ValidationUseCase {
         return MetadataUserResponseDto.builder()
                 .username(user.getUsername())
                 .role(user.getRole() != null ? user.getRole().name() : null)
-                .active(user.isActive())
+                .active(user.getActive() != null && user.getActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();

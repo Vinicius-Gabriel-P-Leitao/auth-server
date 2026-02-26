@@ -52,7 +52,13 @@ public class User implements UserDetails {
     private Role role;
 
     @Column(name = "bl_active")
-    private boolean active = true;
+    private Boolean active = true;
+
+    @Column(name = "bl_password_reset_required")
+    private Boolean passwordResetRequired = false;
+
+    @Column(name = "int_token_version")
+    private Integer tokenVersion = 0;
 
     @LastModifiedDate
     @Column(name = "dt_updated_at")
@@ -77,17 +83,25 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return active;
+        return active != null && active;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return active;
+        return active != null && active;
     }
 
     public Instant getCreatedAt() {
         if (userId == null) return null;
         long timestamp = userId.getMostSignificantBits() >>> 16;
         return Instant.ofEpochMilli(timestamp);
+    }
+
+    public boolean isPasswordResetRequired() {
+        return passwordResetRequired != null && passwordResetRequired;
+    }
+
+    public Integer getTokenVersion() {
+        return tokenVersion == null ? 0 : tokenVersion;
     }
 }

@@ -10,7 +10,9 @@ package com.auth.api.controller;
 import com.auth.api.dto.AuthenticationRequestDto;
 import com.auth.api.dto.AuthenticationResponseDto;
 import com.auth.api.dto.MetadataUserResponseDto;
+import com.auth.api.dto.RefreshTokenRequestDto;
 import com.auth.application.usecase.LoginUseCase;
+import com.auth.application.usecase.RefreshTokenUseCase;
 import com.auth.application.usecase.ValidationUseCase;
 
 import jakarta.validation.Valid;
@@ -27,10 +29,17 @@ public class AuthController {
 
     private final LoginUseCase loginUseCase;
     private final ValidationUseCase validationUseCase;
+    private final RefreshTokenUseCase refreshTokenUseCase;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto loginRequest) {
         AuthenticationResponseDto response = loginUseCase.execute(loginRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponseDto> refresh(@Valid @RequestBody RefreshTokenRequestDto refreshRequest) {
+        AuthenticationResponseDto response = refreshTokenUseCase.execute(refreshRequest);
         return ResponseEntity.ok(response);
     }
 
