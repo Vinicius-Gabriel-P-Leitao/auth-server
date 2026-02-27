@@ -42,7 +42,10 @@ axiosClient.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
-        if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+        // Prevent infinite loops: don't intercept 401s from login or refresh endpoints
+        const isAuthEndpoint = originalRequest?.url?.includes('/login') || originalRequest?.url?.includes('/refresh')
+
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
             if (isRefreshing) {
                 return new Promise(function (resolve, reject) {
                     failedQueue.push({ resolve, reject })

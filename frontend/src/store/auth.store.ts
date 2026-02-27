@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { MetadataUserResponseDto } from '../modules/auth/auth.types'
+import type { MetadataUserResponseDto } from '../modules/auth/molecule/auth.types'
 import axios from 'axios'
 
 interface AuthState {
@@ -21,7 +21,6 @@ const proactiveRefresh = async () => {
             {},
             {
                 withCredentials: true,
-                baseURL: '/api', // if proxied, wait we set '/api' later or rely on vite proxy. Vite proxy is at '/v1' automatically
             }
         )
         if (response.data.token && response.data.metadata) {

@@ -45,14 +45,22 @@ public class ServerSecurityConfig {
                 )
                 .authorizeHttpRequests((matcherRegistry) -> {
                     matcherRegistry
+                            // Public API Matchers
                             .requestMatchers("/v1/user/login").permitAll()
                             .requestMatchers("/v1/user/refresh").permitAll()
                             .requestMatchers("/v1/user/register").permitAll()
-                            .requestMatchers("/v1/user/validate").authenticated()
-                            .requestMatchers("/v1/password/first-change").authenticated()
+
+                            // Admin API Matchers
                             .requestMatchers("/v1/user/register/admin").hasRole(Role.ADMIN.name())
                             .requestMatchers("/v1/password/admin-reset").hasRole(Role.ADMIN.name())
+                            
+                            // Swagger Docs
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                            // SPA routing: permit all GET requests that aren't API endpoints (assets, html, SPA routes)
+                            .requestMatchers(org.springframework.http.HttpMethod.GET, "/**").permitAll()
+
+                            // Block any other unknown request
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
