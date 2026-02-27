@@ -10,6 +10,7 @@ package com.auth.application.usecase;
 import com.auth.api.dto.password.ChangePasswordRequestDto;
 import com.auth.api.dto.password.FirstChangePasswordRequestDto;
 import com.auth.api.dto.password.ResetPasswordRequestDto;
+import com.auth.application.service.PasswordGeneratorService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.User;
 import com.auth.domain.repository.UserRepository;
@@ -36,6 +37,8 @@ class PasswordUseCaseTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordGeneratorService passwordGeneratorService;
 
     @InjectMocks
     private PasswordUseCase passwordUseCase;
@@ -89,15 +92,17 @@ class PasswordUseCaseTest {
     @DisplayName("Deve realizar reset administrativo e marcar flag obrigatória")
     void shouldPerformAdminReset() {
         // Arrange
+        String mockTempPass = "SecureTemp123!";
         ResetPasswordRequestDto request = new ResetPasswordRequestDto("test@example.com");
         when(userService.userIsPresent("test@example.com")).thenReturn(testUser);
-        when(passwordEncoder.encode(anyString())).thenReturn("encoded-temp-password");
+        when(passwordGeneratorService.generateTemporaryPassword()).thenReturn(mockTempPass);
+        when(passwordEncoder.encode(mockTempPass)).thenReturn("encoded-temp-password");
 
         // Act
         String tempPass = passwordUseCase.resetByAdmin(request);
 
         // Assert
-        assertNotNull(tempPass);
+        assertEquals(mockTempPass, tempPass);
         assertTrue(testUser.isPasswordResetRequired());
         assertEquals("encoded-temp-password", testUser.getPassword());
         verify(userRepository).save(testUser);

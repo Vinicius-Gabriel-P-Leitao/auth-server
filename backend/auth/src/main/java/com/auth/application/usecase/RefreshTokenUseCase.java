@@ -10,6 +10,7 @@ package com.auth.application.usecase;
 import com.auth.api.dto.auth.AuthenticationResponseDto;
 import com.auth.api.dto.auth.MetadataUserResponseDto;
 import com.auth.api.dto.token.RefreshTokenRequestDto;
+import com.auth.application.dto.AuthenticationResult;
 import com.auth.application.service.RefreshTokenService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.RefreshToken;
@@ -26,13 +27,13 @@ public class RefreshTokenUseCase {
     private final JwtGeneratorService jwtService;
     private final UserService userService;
 
-    public AuthenticationResponseDto execute(RefreshTokenRequestDto request) {
+    public AuthenticationResult execute(RefreshTokenRequestDto request) {
         RefreshToken token = refreshTokenService.findByToken(request.refreshToken());
         refreshTokenService.verifyExpiration(token);
 
         User user = token.getUser();
 
-        // Invalida o Access Token antigo
+        // NOTE: Invalida o Access Token antigo
         userService.incrementTokenVersion(user);
 
         String jwt = jwtService.generateToken(user);
@@ -40,18 +41,21 @@ public class RefreshTokenUseCase {
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
         MetadataUserResponseDto metadata = MetadataUserResponseDto.builder()
+                .id(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .active(user.getActive())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .updatedBy(user.getUpdatedBy())
                 .build();
 
-        return AuthenticationResponseDto.builder()
+        AuthenticationResponseDto responseDto = AuthenticationResponseDto.builder()
                 .token(jwt)
-                .refreshToken(newRefreshToken.getToken())
                 .metadata(metadata)
                 .build();
+                
+        return new AuthenticationResult(responseDto, newRefreshToken.getToken());
     }
 }

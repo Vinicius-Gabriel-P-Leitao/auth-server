@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -39,7 +41,7 @@ public class User implements UserDetails {
     @Column(name = "col_user_id", updatable = false, nullable = false)
     private UUID userId;
 
-    @Column(name = "ds_user_name", unique = true, nullable = false, length = 30)
+    @Column(name = "ds_user_name", nullable = false, length = 30)
     private String userName;
 
     @Email
@@ -66,6 +68,10 @@ public class User implements UserDetails {
     @LastModifiedDate
     @Column(name = "dt_updated_at")
     private Instant updatedAt;
+
+    @org.springframework.data.annotation.LastModifiedBy
+    @Column(name = "ds_updated_by")
+    private String updatedBy;
 
     @NonNull
     @Override

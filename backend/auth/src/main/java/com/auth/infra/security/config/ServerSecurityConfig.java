@@ -10,12 +10,14 @@ package com.auth.infra.security.config;
 import com.auth.application.service.CustomUserDetailsService;
 import com.auth.domain.model.Role;
 import com.auth.infra.security.filter.JwtAuthenticationFilter;
+import com.auth.infra.security.filter.PasswordResetFilter;
 import com.auth.infra.security.handler.CustomAccessDeniedHandler;
 import com.auth.infra.security.handler.CustomAuthenticationEntryPoint;
 import com.auth.infra.security.service.JwtGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,17 +47,29 @@ public class ServerSecurityConfig {
                 )
                 .authorizeHttpRequests((matcherRegistry) -> {
                     matcherRegistry
+                            // Public API Matchers
                             .requestMatchers("/v1/user/login").permitAll()
                             .requestMatchers("/v1/user/refresh").permitAll()
-                            .requestMatchers("/v1/user/register").permitAll()
-                            .requestMatchers("/v1/user/validate").authenticated()
-                            .requestMatchers("/v1/password/first-change").authenticated()
+                            // Registro removido das rotas públicas
+
+                            // Admin API Matchers
+                            .requestMatchers("/v1/user/register").hasRole(Role.ADMIN.name())
                             .requestMatchers("/v1/user/register/admin").hasRole(Role.ADMIN.name())
                             .requestMatchers("/v1/password/admin-reset").hasRole(Role.ADMIN.name())
+                            .requestMatchers(HttpMethod.PATCH, "/v1/user/deactivate").hasRole(Role.ADMIN.name())
+                            .requestMatchers(HttpMethod.PATCH, "/v1/user/activate").hasRole(Role.ADMIN.name())
+                            .requestMatchers(HttpMethod.GET, "/v1/user").hasRole(Role.ADMIN.name())
+                            
+                            // Swagger Docs
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                            // SPA routing: permit all GET requests that aren't API endpoints (assets, html, SPA routes)
+                            .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                            .requestMatchers("/v1/password/first-change").authenticated()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new PasswordResetFilter(), JwtAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();

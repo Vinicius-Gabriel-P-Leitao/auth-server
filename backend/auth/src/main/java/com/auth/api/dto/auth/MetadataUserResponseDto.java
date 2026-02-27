@@ -9,13 +9,14 @@ package com.auth.api.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Builder;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Builder
 public record MetadataUserResponseDto(
+        @JsonProperty("id") UUID id,
         @JsonProperty("username") String username,
         @JsonProperty("email") String email,
         @JsonProperty("role") String role,
@@ -28,6 +29,12 @@ public record MetadataUserResponseDto(
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "America/Sao_Paulo")
         @JsonProperty("updated_at")
-        Instant updatedAt
+        Instant updatedAt,
+
+        @JsonProperty("updated_by")
+        String updatedBy,
+
+        @JsonProperty("temp_password")
+        String tempPassword
 ) {
 }

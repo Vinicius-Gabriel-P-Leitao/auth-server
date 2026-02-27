@@ -12,3 +12,7 @@ services:
       - "5432"
     networks:
       - net-container
+
+networks:
+  net-container:
+    driver: bridge
