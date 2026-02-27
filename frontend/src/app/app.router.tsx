@@ -84,6 +84,31 @@ export const router = createRouter({
     defaultPreload: 'intent',
 })
 
+// NOTE: Subscrição reativa para gerenciar navegação baseada no estado global (Perfec SPA Architecture)
+useAuthStore.subscribe(
+    (state) => ({ 
+        isAuthenticated: state.isAuthenticated, 
+        passwordResetRequired: state.passwordResetRequired 
+    }),
+    ({ isAuthenticated, passwordResetRequired }: { isAuthenticated: boolean; passwordResetRequired: boolean }) => {
+        const path = window.location.pathname
+        
+        if (!isAuthenticated && path !== '/login') {
+            router.navigate({ to: '/login' })
+            return
+        }
+
+        if (isAuthenticated && passwordResetRequired && path !== '/reset-password') {
+            router.navigate({ to: '/reset-password' })
+            return
+        }
+
+        // Se o estado mudar mas continuarmos na mesma rota, forçamos o Router a revalidar as guardas
+        router.invalidate()
+    },
+    { fireImmediately: true }
+)
+
 // Registra as rotas para type safety.
 declare module '@tanstack/react-router' {
     interface Register {

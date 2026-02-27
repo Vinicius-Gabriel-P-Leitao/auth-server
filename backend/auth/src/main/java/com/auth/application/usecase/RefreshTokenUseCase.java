@@ -42,7 +42,7 @@ public class RefreshTokenUseCase {
 
         MetadataUserResponseDto metadata = MetadataUserResponseDto.builder()
                 .id(user.getUserId())
-                .username(user.getUsername())
+                .username(user.getUserName())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : null)
                 .active(user.getActive())

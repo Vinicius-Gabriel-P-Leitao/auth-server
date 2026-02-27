@@ -2,8 +2,8 @@
 import type { MetadataUserResponseDto } from '../../auth/molecule/auth.types'
 
 export type RegisterRequestDto = {
-    username: string
     email: string
+    username: string
     password: string
 }
 
@@ -12,9 +12,9 @@ export type RegisterResponseDto = MetadataUserResponseDto
 export type PaginationMetaDto = {
     page: number
     limit: number
-    totalItems: number
-    totalPages: number
     hasNext: boolean
+    totalPages: number
+    totalItems: number
     hasPrevious: boolean
 }
 
