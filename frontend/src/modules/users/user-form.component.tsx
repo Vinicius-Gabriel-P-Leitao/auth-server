@@ -1,24 +1,40 @@
+import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, UserPlus } from 'lucide-react'
+import { Loader2, UserPlus, ShieldPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Input } from '../../components/ui/input.component'
 import { Button } from '../../components/ui/button.component'
 import { registerAdminSchema } from './molecule/user.schema'
-import { registerAdminAttempt } from './services/user.service'
+import { registerAdminAttempt, registerUserAttempt } from './services/user.service'
 import { getErrorMessage } from '../../lib/api-error.util'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card.component'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '../../components/ui/dialog.component'
 
-export function UserFormComponent() {
+type Props = {
+    role: 'ADMIN' | 'USER'
+}
+
+export function CreateUserDialog({ role }: Props) {
+    const [open, setOpen] = useState(false)
+    const isAdmin = role === 'ADMIN'
+
     const registerMutation = useMutation({
-        mutationFn: registerAdminAttempt,
+        mutationFn: isAdmin ? registerAdminAttempt : registerUserAttempt,
         onSuccess: () => {
-            toast.success('Administrador cadastrado com sucesso!')
+            toast.success(`${isAdmin ? 'Administrador' : 'Usuário'} cadastrado com sucesso!`)
             form.reset()
+            setOpen(false)
         },
         onError: (error) => {
-            toast.error(getErrorMessage(error, 'Erro ao cadastrar administrador. Tente novamente.'))
+            toast.error(getErrorMessage(error, `Erro ao cadastrar ${isAdmin ? 'administrador' : 'usuário'}. Tente novamente.`))
         },
     })
 
@@ -28,45 +44,52 @@ export function UserFormComponent() {
             email: '',
             password: '',
         },
-        validators: {
-            onChange({ value }) {
-                const result = registerAdminSchema.safeParse(value)
-                if (result.success) return undefined
-
-                // Extrai erros específicos se não passou
-                const formatted = result.error.format()
-                return formatted
-            }
-        },
         onSubmit: async ({ value }) => {
             await registerMutation.mutateAsync(value)
         },
     })
 
     return (
-        <Card className="w-full max-w-lg shadow-sm">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <UserPlus className="w-5 h-5 text-gray-500" />
-                    Novo Administrador
-                </CardTitle>
-                <CardDescription>
-                    Cadastre um novo usuário com privilégios de acesso total ao sistema.
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant={isAdmin ? 'default' : 'outline'} className={isAdmin ? 'bg-indigo-600 hover:bg-indigo-700' : ''}>
+                    {isAdmin ? <ShieldPlus className="w-4 h-4 mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+                    Novo {isAdmin ? 'Admin' : 'Usuário'}
+                </Button>
+            </DialogTrigger>
+            <DialogContent showCloseButton>
+                <DialogHeader>
+                    <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center mb-4 ${isAdmin ? 'bg-indigo-100' : 'bg-primary-100'}`}>
+                        {isAdmin ? <ShieldPlus className={`w-6 h-6 text-indigo-600`} /> : <UserPlus className={`w-6 h-6 text-primary-600`} />}
+                    </div>
+                    <DialogTitle className="text-center">
+                        Cadastrar Novo {isAdmin ? 'Administrador' : 'Usuário'}
+                    </DialogTitle>
+                    <DialogDescription className="text-center pt-2">
+                        {isAdmin
+                            ? 'Cadastre um novo usuário com privilégios de acesso total ao sistema.'
+                            : 'Cadastre um novo usuário para acesso restrito às funcionalidades comuns.'}
+                    </DialogDescription>
+                </DialogHeader>
+
                 <form
                     onSubmit={(e) => {
                         e.preventDefault()
                         e.stopPropagation()
                         form.handleSubmit()
                     }}
-                    className="space-y-4"
+                    className="space-y-4 mt-4"
                 >
                     <form.Field
                         name="username"
+                        validators={{
+                            onChange: ({ value }) => {
+                                const result = registerAdminSchema.shape.username.safeParse(value)
+                                return result.success ? undefined : 'Mínimo de 3 caracteres.'
+                            }
+                        }}
                         children={(field) => {
-                            const errorMsg = field.state.meta.errors?.length ? 'Verifique os requisitos' : undefined
+                            const errorMsg = field.state.meta.errors?.length ? field.state.meta.errors[0] : undefined
                             return (
                                 <div className="space-y-1">
                                     <label className="text-sm font-semibold text-gray-700" htmlFor={field.name}>
@@ -89,8 +112,14 @@ export function UserFormComponent() {
 
                     <form.Field
                         name="email"
+                        validators={{
+                            onChange: ({ value }) => {
+                                const result = registerAdminSchema.shape.email.safeParse(value)
+                                return result.success ? undefined : 'Formato de E-mail inválido.'
+                            }
+                        }}
                         children={(field) => {
-                            const errorMsg = field.state.meta.errors?.length ? 'E-mail inválido' : undefined
+                            const errorMsg = field.state.meta.errors?.length ? field.state.meta.errors[0] : undefined
                             return (
                                 <div className="space-y-1">
                                     <label className="text-sm font-semibold text-gray-700" htmlFor={field.name}>
@@ -99,7 +128,7 @@ export function UserFormComponent() {
                                     <Input
                                         id={field.name}
                                         type="email"
-                                        placeholder="admin@exemplo.com"
+                                        placeholder="usuario@exemplo.com"
                                         value={field.state.value}
                                         onChange={(e) => field.handleChange(e.target.value)}
                                         onBlur={field.handleBlur}
@@ -113,8 +142,14 @@ export function UserFormComponent() {
 
                     <form.Field
                         name="password"
+                        validators={{
+                            onChange: ({ value }) => {
+                                const result = registerAdminSchema.shape.password.safeParse(value)
+                                return result.success ? undefined : 'A senha deve possuir mínimo de 6 caracteres.'
+                            }
+                        }}
                         children={(field) => {
-                            const errorMsg = field.state.meta.errors?.length ? 'Mínimo 6 caracteres' : undefined
+                            const errorMsg = field.state.meta.errors?.length ? field.state.meta.errors[0] : undefined
                             return (
                                 <div className="space-y-1">
                                     <label className="text-sm font-semibold text-gray-700" htmlFor={field.name}>
@@ -135,17 +170,21 @@ export function UserFormComponent() {
                         }}
                     />
 
-                    <div className="pt-2 flex justify-end">
+                    <div className="pt-4 flex justify-end gap-2">
+                        <Button type="button" variant="ghost" onClick={() => setOpen(false)}>
+                            Cancelar
+                        </Button>
                         <Button
                             type="submit"
                             disabled={registerMutation.isPending}
+                            className={isAdmin ? 'bg-indigo-600 hover:bg-indigo-700' : ''}
                         >
                             {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Salvar Administrador
+                            Salvar {isAdmin ? 'Administrador' : 'Usuário'}
                         </Button>
                     </div>
                 </form>
-            </CardContent>
-        </Card>
+            </DialogContent>
+        </Dialog>
     )
 }

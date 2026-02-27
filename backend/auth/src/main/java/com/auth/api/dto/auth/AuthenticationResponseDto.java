@@ -13,7 +13,6 @@ import lombok.Builder;
 @Builder
 public record AuthenticationResponseDto(
         @JsonProperty("token") String token, 
-        @JsonProperty("refresh_token") String refreshToken,
         @JsonProperty("password_reset_required") boolean passwordResetRequired,
         @JsonProperty("metadata") MetadataUserResponseDto metadata
 ) {

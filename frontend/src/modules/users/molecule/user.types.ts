@@ -1,5 +1,5 @@
-// Reusing AuthenticationResponseDto because RegisterController returns it
-import type { AuthenticationResponseDto } from '../../auth/molecule/auth.types'
+// Reusing MetadataUserResponseDto because RegisterController returns it directly now
+import type { MetadataUserResponseDto } from '../../auth/molecule/auth.types'
 
 export type RegisterRequestDto = {
     username: string
@@ -7,4 +7,4 @@ export type RegisterRequestDto = {
     password: string
 }
 
-export type RegisterResponseDto = AuthenticationResponseDto
+export type RegisterResponseDto = MetadataUserResponseDto

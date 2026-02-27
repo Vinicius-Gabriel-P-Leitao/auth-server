@@ -10,6 +10,7 @@ package com.auth.application.usecase;
 import com.auth.api.dto.auth.AuthenticationRequestDto;
 import com.auth.api.dto.auth.AuthenticationResponseDto;
 import com.auth.api.dto.auth.MetadataUserResponseDto;
+import com.auth.application.dto.AuthenticationResult;
 import com.auth.application.service.RefreshTokenService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.RefreshToken;
@@ -36,9 +37,7 @@ public class LoginUseCase {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
-    public AuthenticationResponseDto execute(AuthenticationRequestDto loginRequest) {
-        log.info("Tentativa de login para o usuário: {}", loginRequest.email());
-
+    public AuthenticationResult execute(AuthenticationRequestDto loginRequest) {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
         );
@@ -64,11 +63,12 @@ public class LoginUseCase {
                 .updatedAt(user.getUpdatedAt())
                 .build();
 
-        return AuthenticationResponseDto.builder()
+        AuthenticationResponseDto responseDto = AuthenticationResponseDto.builder()
                 .token(jwt)
-                .refreshToken(refreshToken.getToken())
                 .passwordResetRequired(user.isPasswordResetRequired())
                 .metadata(metadata)
                 .build();
+
+        return new AuthenticationResult(responseDto, refreshToken.getToken());
     }
 }

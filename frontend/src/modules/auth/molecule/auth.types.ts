@@ -8,10 +8,9 @@ export type MetadataUserResponseDto = {
 }
 
 export type AuthenticationResponseDto = {
-    token: string
-    refresh_token: string
-    passwordResetRequired: boolean
-    metadata: MetadataUserResponseDto
+    readonly token: string
+    readonly password_reset_required: boolean
+    readonly metadata: MetadataUserResponseDto
 }
 
 export type AuthenticationRequestDto = {

@@ -8,3 +8,11 @@ export async function registerAdminAttempt(payload: RegisterRequestDto): Promise
     const { data } = await axiosClient.post<RegisterResponseDto>('/v1/user/register/admin', payload)
     return data
 }
+
+/**
+ * Registra um novo usuário comum.
+ */
+export async function registerUserAttempt(payload: RegisterRequestDto): Promise<RegisterResponseDto> {
+    const { data } = await axiosClient.post<RegisterResponseDto>('/v1/user/register', payload)
+    return data
+}
