@@ -8,7 +8,8 @@ interface AuthState {
     user: MetadataUserResponseDto | null
     isAuthenticated: boolean
     isAdmin: boolean
-    setAuth: (token: string, user: MetadataUserResponseDto) => void
+    passwordResetRequired: boolean
+    setAuth: (token: string, user: MetadataUserResponseDto, passwordResetRequired: boolean) => void
     clearAuth: () => void
 }
 
@@ -17,7 +18,7 @@ let refreshInterval: number | undefined
 // We use a standalone axios instance for the proactive refresh to avoid circular dependencies with our main axios client
 const proactiveRefresh = async () => {
     try {
-        const response = await axios.post<{ token: string; metadata: MetadataUserResponseDto }>(
+        const response = await axios.post<{ token: string; metadata: MetadataUserResponseDto; password_reset_required: boolean }>(
             '/v1/user/refresh',
             {},
             {
@@ -25,7 +26,7 @@ const proactiveRefresh = async () => {
             }
         )
         if (response.data.token && response.data.metadata) {
-            useAuthStore.getState().setAuth(response.data.token, response.data.metadata)
+            useAuthStore.getState().setAuth(response.data.token, response.data.metadata, response.data.password_reset_required)
         }
     } catch (error) {
         console.error('Proactive refresh failed', error)
@@ -40,13 +41,15 @@ export const useAuthStore = create<AuthState>()(
             user: null,
             isAuthenticated: false,
             isAdmin: false,
+            passwordResetRequired: false,
 
-            setAuth: (token, user) => {
+            setAuth: (token, user, passwordResetRequired) => {
                 set({
                     token,
                     user,
                     isAuthenticated: true,
                     isAdmin: user.role === 'ADMIN',
+                    passwordResetRequired,
                 })
 
                 if (refreshInterval) {
@@ -66,6 +69,7 @@ export const useAuthStore = create<AuthState>()(
                     user: null,
                     isAuthenticated: false,
                     isAdmin: false,
+                    passwordResetRequired: false,
                 })
             },
         }),

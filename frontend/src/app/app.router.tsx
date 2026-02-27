@@ -2,6 +2,7 @@ import { Outlet, createRootRoute, createRoute, createRouter, redirect } from '@t
 import { AppErrorBoundary } from './app-error-boundary.component'
 import { useAuthStore } from '../store/auth.store'
 import { LoginPage } from '../modules/auth/login.page'
+import { ResetPasswordPage } from '../modules/auth/reset-password.page'
 import { UsersPage } from '../modules/users/users.page'
 import toast from 'react-hot-toast'
 
@@ -29,13 +30,24 @@ export const protectedLayout = createRoute({
     getParentRoute: () => rootRoute,
     id: 'protected',
     beforeLoad: ({ location }) => {
-        const { isAuthenticated, isAdmin, clearAuth } = useAuthStore.getState()
+        const { isAuthenticated, isAdmin, passwordResetRequired, clearAuth } = useAuthStore.getState()
+
         if (!isAuthenticated) {
             throw redirect({ to: '/login', search: { redirect: location.href } })
         }
-        if (!isAdmin) {
+
+        // Forced Password Reset Guard
+        const isResetPage = location.pathname === '/reset-password'
+        if (passwordResetRequired && !isResetPage) {
+            throw redirect({ to: '/reset-password' })
+        }
+        if (!passwordResetRequired && isResetPage) {
+            throw redirect({ to: '/' })
+        }
+
+        if (!isAdmin && !passwordResetRequired) { // Only check admin if not in reset flow
             toast.error('Você não tem permissão para acessar este recurso.')
-            clearAuth() // Clear auth since they are unauthorized here
+            clearAuth()
             throw redirect({ to: '/login' })
         }
     },
@@ -54,9 +66,15 @@ export const dashboardRoute = createRoute({
     component: UsersPage,
 })
 
+export const resetPasswordRoute = createRoute({
+    getParentRoute: () => protectedLayout,
+    path: '/reset-password',
+    component: ResetPasswordPage,
+})
+
 export const routeTree = rootRoute.addChildren([
     loginRoute,
-    protectedLayout.addChildren([dashboardRoute])
+    protectedLayout.addChildren([dashboardRoute, resetPasswordRoute])
 ])
 
 export const router = createRouter({

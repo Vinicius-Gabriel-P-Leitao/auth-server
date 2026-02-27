@@ -16,10 +16,15 @@ export function LoginPage() {
     const loginMutation = useMutation({
         mutationFn: loginAttempt,
         onSuccess: (data) => {
-            if (data.metadata.role === 'ADMIN') {
-                toast.success(`Bem-vindo, ${data.metadata.username}!`)
+            if (data.password_reset_required) {
+                toast.error('Você deve alterar sua senha antes de continuar.', { icon: '🔑' })
+                navigate({ to: '/reset-password' })
+            } else {
+                if (data.metadata.role === 'ADMIN') {
+                    toast.success(`Bem-vindo, ${data.metadata.username}!`)
+                }
+                navigate({ to: '/' })
             }
-            navigate({ to: '/' })
         },
         onError: (error) => {
             toast.error(getErrorMessage(error, 'Credenciais inválidas. Tente novamente.'))

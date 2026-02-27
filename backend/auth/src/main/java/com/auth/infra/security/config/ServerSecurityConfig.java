@@ -10,6 +10,7 @@ package com.auth.infra.security.config;
 import com.auth.application.service.CustomUserDetailsService;
 import com.auth.domain.model.Role;
 import com.auth.infra.security.filter.JwtAuthenticationFilter;
+import com.auth.infra.security.filter.PasswordResetFilter;
 import com.auth.infra.security.handler.CustomAccessDeniedHandler;
 import com.auth.infra.security.handler.CustomAuthenticationEntryPoint;
 import com.auth.infra.security.service.JwtGeneratorService;
@@ -61,9 +62,11 @@ public class ServerSecurityConfig {
 
                             // SPA routing: permit all GET requests that aren't API endpoints (assets, html, SPA routes)
                             .requestMatchers(HttpMethod.GET, "/**").permitAll()
+                            .requestMatchers("/v1/password/first-change").authenticated()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new PasswordResetFilter(), JwtAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();

@@ -4,7 +4,7 @@ import { useAuthStore } from '../../../store/auth.store'
 
 export async function loginAttempt(payload: AuthenticationRequestDto): Promise<AuthenticationResponseDto> {
     const { data } = await axiosClient.post<AuthenticationResponseDto>('/v1/user/login', payload)
-    useAuthStore.getState().setAuth(data.token, data.metadata)
+    useAuthStore.getState().setAuth(data.token, data.metadata, data.password_reset_required)
     return data
 }
 
@@ -16,6 +16,12 @@ export async function logoutAttempt(): Promise<void> {
         useAuthStore.getState().clearAuth()
         window.location.href = '/login'
     }
+}
+
+export async function firstChangePasswordAttempt(password: string): Promise<void> {
+    await axiosClient.post('/v1/password/first-change', { new_password: password })
+    useAuthStore.getState().clearAuth() // Force login again as requested
+    window.location.href = '/login'
 }
 
 export async function getProfile(): Promise<MetadataUserResponseDto> {

@@ -6,3 +6,13 @@ export const loginSchema = z.object({
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>
+
+export const firstChangeSchema = z.object({
+    password: z.string().min(6, 'A nova senha deve ter pelo menos 6 caracteres'),
+    confirmPassword: z.string().min(6, 'A confirmação deve ter pelo menos 6 caracteres'),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmPassword"],
+})
+
+export type FirstChangeFormData = z.infer<typeof firstChangeSchema>
