@@ -1,9 +1,5 @@
 import { create } from "zustand";
-import {
-  persist,
-  createJSONStorage,
-  subscribeWithSelector,
-} from "zustand/middleware";
+import { persist, createJSONStorage, subscribeWithSelector } from "zustand/middleware";
 import type { MetadataUserResponseDto } from "../modules/auth/molecule/auth.types";
 import axios from "axios";
 
@@ -13,11 +9,7 @@ type AuthState = {
   isAuthenticated: boolean;
   isAdmin: boolean;
   passwordResetRequired: boolean;
-  setAuth: (
-    token: string,
-    user: MetadataUserResponseDto,
-    passwordResetRequired: boolean,
-  ) => void;
+  setAuth: (token: string, user: MetadataUserResponseDto, passwordResetRequired: boolean) => void;
   clearAuth: () => void;
 };
 
@@ -37,13 +29,7 @@ const proactiveRefresh = async () => {
       },
     );
     if (response.data.token && response.data.metadata) {
-      useAuthStore
-        .getState()
-        .setAuth(
-          response.data.token,
-          response.data.metadata,
-          response.data.password_reset_required,
-        );
+      useAuthStore.getState().setAuth(response.data.token, response.data.metadata, response.data.password_reset_required);
     }
   } catch (error) {
     console.error("Proactive refresh failed", error);
@@ -101,10 +87,7 @@ export const useAuthStore = create<AuthState>()(
               window.clearInterval(refreshInterval);
             }
 
-            refreshInterval = window.setInterval(
-              proactiveRefresh,
-              9 * 60 * 1000,
-            );
+            refreshInterval = window.setInterval(proactiveRefresh, 9 * 60 * 1000);
           }
         },
       },

@@ -27,9 +27,21 @@ public class AuditConfig {
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return () -> Optional.ofNullable(SecurityContextHolder.getContext())
-                .map(SecurityContext::getAuthentication)
-                .filter(Authentication::isAuthenticated)
-                .map(Authentication::getName);
+        return () -> {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            if (authentication == null || !authentication.isAuthenticated() || 
+                authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+                return Optional.empty();
+            }
+
+            // Mesmo que getUsername() retorne o nome de exibição, 
+            // no AuditorAware costuma-se preferir o identificador único (E-mail).
+            if (authentication.getPrincipal() instanceof com.auth.domain.model.User user) {
+                return Optional.of(user.getEmail());
+            }
+
+            return Optional.of(authentication.getName());
+        };
     }
 }
