@@ -13,6 +13,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
