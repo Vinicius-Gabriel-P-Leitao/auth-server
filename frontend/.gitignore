@@ -26,3 +26,5 @@ test-results
 test_debug*.txt
 *storybook.log
 storybook-static
+
+.env
