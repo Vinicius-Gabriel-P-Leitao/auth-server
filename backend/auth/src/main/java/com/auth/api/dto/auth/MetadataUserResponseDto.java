@@ -9,13 +9,14 @@ package com.auth.api.dto.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Builder;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Builder
 public record MetadataUserResponseDto(
+        @JsonProperty("id") UUID id,
         @JsonProperty("username") String username,
         @JsonProperty("email") String email,
         @JsonProperty("role") String role,

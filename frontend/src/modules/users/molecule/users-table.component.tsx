@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
     Table,
     TableBody,
@@ -8,7 +9,7 @@ import {
     TableRow,
 } from '../../../components/ui/table.component'
 import { Button } from '../../../components/ui/button.component'
-import { KeyRound, ShieldAlert } from 'lucide-react'
+import { KeyRound, ShieldAlert, Loader2, RefreshCw } from 'lucide-react'
 import { format } from 'date-fns'
 import {
     Dialog,
@@ -17,62 +18,69 @@ import {
     DialogHeader,
     DialogTitle,
 } from '../../../components/ui/dialog.component'
-
-// Temporary mock user type matching backend MetadataUserResponseDto structure roughly
-type MockUser = {
-    id: string
-    username: string
-    email: string
-    role: 'ADMIN' | 'USER'
-    active: boolean
-    createdAt: string
-}
-
-const mockUsers: Array<MockUser> = [
-    {
-        id: '1',
-        username: 'admin_master',
-        email: 'admin@auth.com',
-        role: 'ADMIN',
-        active: true,
-        createdAt: '2026-02-26T22:24:58.979Z',
-    },
-    {
-        id: '2',
-        username: 'john_doe',
-        email: 'john@example.com',
-        role: 'USER',
-        active: true,
-        createdAt: '2026-02-27T10:00:00.000Z',
-    },
-    {
-        id: '3',
-        username: 'jane_smith',
-        email: 'jane@example.com',
-        role: 'USER',
-        active: false,
-        createdAt: '2026-02-28T14:30:00.000Z',
-    },
-]
+import { getUsersList } from '../services/user.service'
+import type { MetadataUserResponseDto } from '../../auth/molecule/auth.types'
+import { getErrorMessage } from '../../../lib/api-error.util'
 
 export function UsersTableComponent() {
+    const [page, setPage] = useState(0)
     const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null)
     const [resetDialogOpen, setResetDialogOpen] = useState(false)
 
-    // Simulate password reset logic for UI
-    const handleResetPassword = (_user: MockUser) => {
+    const { data: paginatedUsers, isLoading, error, refetch, isRefetching } = useQuery({
+        queryKey: ['users', page],
+        queryFn: () => getUsersList(page, 50),
+    })
+
+    const handleResetPassword = (_user: MetadataUserResponseDto) => {
         // In reality we would call the reset password endpoint: POST /v1/password/admin-reset with { email }
-        // For now, mock a response showing the temporary password
         const fakeTempPassword = Math.random().toString(36).slice(-8)
         setTemporaryPassword(fakeTempPassword)
         setResetDialogOpen(true)
     }
 
+    if (isLoading) {
+        return (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
+                <Loader2 className="w-10 h-10 text-primary-600 animate-spin mb-4" />
+                <p className="text-gray-500 font-medium">Carregando usuários...</p>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
+                <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                    <ShieldAlert className="w-8 h-8 text-red-600" />
+                </div>
+                <p className="text-red-600 font-semibold mb-2">Erro ao carregar usuários</p>
+                <p className="text-gray-500 text-sm mb-6 max-w-sm text-center">
+                    {getErrorMessage(error, 'Não foi possível buscar a lista de usuários no momento.')}
+                </p>
+                <Button onClick={() => refetch()} variant="outline">
+                    Tentar Novamente
+                </Button>
+            </div>
+        )
+    }
+
+    const users = paginatedUsers?.data || []
+    const pagination = paginatedUsers?.meta.pagination
+
     return (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 className="font-semibold text-gray-900">Usuários Cadastrados</h2>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{mockUsers.length} usuários</span>
+                <div className="flex items-center gap-3">
+                    {isRefetching && <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />}
+                    <Button variant="ghost" size="icon" onClick={() => refetch()} className="h-8 w-8 text-gray-400">
+                        <RefreshCw className="w-4 h-4" />
+                    </Button>
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
+                        {pagination?.totalItems || 0} usuários
+                    </span>
+                </div>
             </div>
 
             <Table>
@@ -87,45 +95,80 @@ export function UsersTableComponent() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {mockUsers.map((user) => (
-                        <TableRow key={user.id}>
-                            <TableCell className="font-medium text-gray-900">{user.username}</TableCell>
-                            <TableCell className="text-gray-500">{user.email}</TableCell>
-                            <TableCell>
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${user.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800'}`}>
-                                    {user.role}
-                                </span>
-                            </TableCell>
-                            <TableCell>
-                                {user.active ? (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                        Ativo
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        Inativo
-                                    </span>
-                                )}
-                            </TableCell>
-                            <TableCell className="text-gray-500">
-                                {format(new Date(user.createdAt), 'dd/MM/yyyy')}
-                            </TableCell>
-                            <TableCell className="text-right">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 text-gray-500 hover:text-primary-600 hover:bg-primary-50"
-                                    onClick={() => handleResetPassword(user)}
-                                    title="Resetar Senha"
-                                >
-                                    <KeyRound className="w-4 h-4 mr-1.5" />
-                                    Resetar
-                                </Button>
+                    {users.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={6} className="h-32 text-center text-gray-500">
+                                Nenhum usuário encontrado.
                             </TableCell>
                         </TableRow>
-                    ))}
+                    ) : (
+                        users.map((user) => (
+                            <TableRow key={user.id}>
+                                <TableCell className="font-medium text-gray-900">{user.username}</TableCell>
+                                <TableCell className="text-gray-500">{user.email}</TableCell>
+                                <TableCell>
+                                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${user.role === 'ADMIN' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-800'}`}>
+                                        {user.role}
+                                    </span>
+                                </TableCell>
+                                <TableCell>
+                                    {user.active ? (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                            Ativo
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            Inativo
+                                        </span>
+                                    )}
+                                </TableCell>
+                                <TableCell className="text-gray-500">
+                                    {user.created_at ? format(new Date(user.created_at), 'dd/MM/yyyy') : '-'}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 text-gray-500 hover:text-primary-600 hover:bg-primary-50"
+                                        onClick={() => handleResetPassword(user)}
+                                        title="Resetar Senha"
+                                    >
+                                        <KeyRound className="w-4 h-4 mr-1.5" />
+                                        Resetar
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
                 </TableBody>
             </Table>
+
+            {/* Pagination Controls */}
+            {pagination && pagination.totalPages > 1 && (
+                <div className="p-4 border-t border-gray-100 flex items-center justify-between">
+                    <p className="text-sm text-gray-500">
+                        Página {pagination.page + 1} de {pagination.totalPages}
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!pagination.hasPrevious}
+                            onClick={() => setPage(prev => Math.max(0, prev - 1))}
+                        >
+                            Anterior
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={!pagination.hasNext}
+                            onClick={() => setPage(prev => prev + 1)}
+                        >
+                            Próxima
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* Temporary Password Reset Dialog */}
             <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>

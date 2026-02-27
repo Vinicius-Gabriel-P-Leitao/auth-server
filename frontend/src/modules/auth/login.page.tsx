@@ -16,7 +16,9 @@ export function LoginPage() {
     const loginMutation = useMutation({
         mutationFn: loginAttempt,
         onSuccess: (data) => {
-            toast.success(`Bem-vindo, ${data.metadata.username}!`)
+            if (data.metadata.role === 'ADMIN') {
+                toast.success(`Bem-vindo, ${data.metadata.username}!`)
+            }
             navigate({ to: '/' })
         },
         onError: (error) => {

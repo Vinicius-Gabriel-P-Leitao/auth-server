@@ -55,6 +55,7 @@ public class LoginUseCase {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 
         MetadataUserResponseDto metadata = MetadataUserResponseDto.builder()
+                .id(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : null)

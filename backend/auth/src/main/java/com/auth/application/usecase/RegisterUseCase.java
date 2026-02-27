@@ -34,6 +34,7 @@ public class RegisterUseCase {
                         ErrorCode.INTERNAL_SERVER_ERROR, "Erro ao registrar usuário"));
 
         return MetadataUserResponseDto.builder()
+                .id(user.getUserId())
                 .username(user.getUsername())
                 .email(user.getEmail())
                 .role(user.getRole() != null ? user.getRole().name() : null)

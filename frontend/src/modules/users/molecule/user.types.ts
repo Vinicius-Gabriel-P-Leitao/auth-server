@@ -8,3 +8,23 @@ export type RegisterRequestDto = {
 }
 
 export type RegisterResponseDto = MetadataUserResponseDto
+
+export type PaginationMetaDto = {
+    page: number
+    limit: number
+    totalItems: number
+    totalPages: number
+    hasNext: boolean
+    hasPrevious: boolean
+}
+
+export type PaginatedResponseDto<T> = {
+    data: T[]
+    meta: {
+        pagination: PaginationMetaDto
+    }
+    links: {
+        next: string
+        prev: string
+    }
+}

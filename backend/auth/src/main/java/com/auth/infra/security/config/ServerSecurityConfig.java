@@ -16,6 +16,7 @@ import com.auth.infra.security.service.JwtGeneratorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,14 +54,13 @@ public class ServerSecurityConfig {
                             // Admin API Matchers
                             .requestMatchers("/v1/user/register/admin").hasRole(Role.ADMIN.name())
                             .requestMatchers("/v1/password/admin-reset").hasRole(Role.ADMIN.name())
+                            .requestMatchers(HttpMethod.GET, "/v1/user").hasRole(Role.ADMIN.name())
                             
                             // Swagger Docs
                             .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
                             // SPA routing: permit all GET requests that aren't API endpoints (assets, html, SPA routes)
-                            .requestMatchers(org.springframework.http.HttpMethod.GET, "/**").permitAll()
-
-                            // Block any other unknown request
+                            .requestMatchers(HttpMethod.GET, "/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)

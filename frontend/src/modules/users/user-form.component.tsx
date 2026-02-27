@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useForm } from '@tanstack/react-form'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2, UserPlus, ShieldPlus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -24,12 +24,14 @@ type Props = {
 
 export function CreateUserDialog({ role }: Props) {
     const [open, setOpen] = useState(false)
+    const queryClient = useQueryClient()
     const isAdmin = role === 'ADMIN'
 
     const registerMutation = useMutation({
         mutationFn: isAdmin ? registerAdminAttempt : registerUserAttempt,
         onSuccess: () => {
             toast.success(`${isAdmin ? 'Administrador' : 'Usuário'} cadastrado com sucesso!`)
+            queryClient.invalidateQueries({ queryKey: ['users'] })
             form.reset()
             setOpen(false)
         },
