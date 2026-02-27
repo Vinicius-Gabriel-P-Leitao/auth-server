@@ -10,8 +10,7 @@ export async function loginAttempt(payload: AuthenticationRequestDto): Promise<A
 
 export async function logoutAttempt(): Promise<void> {
     try {
-        // Calling backend to invalidate the server-side refresh token if it exists
-        await axiosClient.post('/v1/user/logout') // Assuming standard endpoint, otherwise it just ignores
+        await axiosClient.post('/v1/user/logout')
     } finally {
         useAuthStore.getState().clearAuth()
         window.location.href = '/login'
@@ -20,7 +19,7 @@ export async function logoutAttempt(): Promise<void> {
 
 export async function firstChangePasswordAttempt(password: string): Promise<void> {
     await axiosClient.post('/v1/password/first-change', { new_password: password })
-    useAuthStore.getState().clearAuth() // Force login again as requested
+    useAuthStore.getState().clearAuth()
     window.location.href = '/login'
 }
 

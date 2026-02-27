@@ -6,7 +6,6 @@ import { ResetPasswordPage } from '../modules/auth/reset-password.page'
 import { UsersPage } from '../modules/users/users.page'
 import toast from 'react-hot-toast'
 
-// Root route that provides layout, error boundary and global guards
 export const rootRoute = createRootRoute({
     component: () => (
         <AppErrorBoundary>
@@ -16,9 +15,9 @@ export const rootRoute = createRootRoute({
 })
 
 export const loginRoute = createRoute({
-    getParentRoute: () => rootRoute,
     path: '/login',
     component: LoginPage,
+    getParentRoute: () => rootRoute,
     beforeLoad: () => {
         if (useAuthStore.getState().isAuthenticated) {
             throw redirect({ to: '/' })
@@ -27,8 +26,8 @@ export const loginRoute = createRoute({
 })
 
 export const protectedLayout = createRoute({
-    getParentRoute: () => rootRoute,
     id: 'protected',
+    getParentRoute: () => rootRoute,
     beforeLoad: ({ location }) => {
         const { isAuthenticated, isAdmin, passwordResetRequired, clearAuth } = useAuthStore.getState()
 
@@ -36,17 +35,20 @@ export const protectedLayout = createRoute({
             throw redirect({ to: '/login', search: { redirect: location.href } })
         }
 
-        // Forced Password Reset Guard
+        // NOTE: Força o usuário a resetar a senha.
         const isResetPage = location.pathname === '/reset-password'
+
         if (passwordResetRequired && !isResetPage) {
             throw redirect({ to: '/reset-password' })
         }
+
         if (!passwordResetRequired && isResetPage) {
             throw redirect({ to: '/' })
         }
 
-        if (!isAdmin && !passwordResetRequired) { // Only check admin if not in reset flow
+        if (!isAdmin && !passwordResetRequired) {
             toast.error('Você não tem permissão para acessar este recurso.')
+
             clearAuth()
             throw redirect({ to: '/login' })
         }
@@ -61,15 +63,15 @@ export const protectedLayout = createRoute({
 })
 
 export const dashboardRoute = createRoute({
-    getParentRoute: () => protectedLayout,
     path: '/',
     component: UsersPage,
+    getParentRoute: () => protectedLayout,
 })
 
 export const resetPasswordRoute = createRoute({
-    getParentRoute: () => protectedLayout,
     path: '/reset-password',
     component: ResetPasswordPage,
+    getParentRoute: () => protectedLayout,
 })
 
 export const routeTree = rootRoute.addChildren([
@@ -82,7 +84,7 @@ export const router = createRouter({
     defaultPreload: 'intent',
 })
 
-// Register router for type safety
+// Registra as rotas para type safety.
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router
