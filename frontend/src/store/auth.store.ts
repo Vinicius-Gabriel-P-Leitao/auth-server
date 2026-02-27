@@ -1,0 +1,69 @@
+import { create } from 'zustand'
+import type { MetadataUserResponseDto } from '../modules/auth/auth.types'
+import axios from 'axios'
+
+interface AuthState {
+    token: string | null
+    user: MetadataUserResponseDto | null
+    isAuthenticated: boolean
+    isAdmin: boolean
+    setAuth: (token: string, user: MetadataUserResponseDto) => void
+    clearAuth: () => void
+}
+
+let refreshInterval: number | undefined
+
+// We use a standalone axios instance for the proactive refresh to avoid circular dependencies with our main axios client
+const proactiveRefresh = async () => {
+    try {
+        const response = await axios.post<{ token: string; metadata: MetadataUserResponseDto }>(
+            '/v1/user/refresh',
+            {},
+            {
+                withCredentials: true,
+                baseURL: '/api', // if proxied, wait we set '/api' later or rely on vite proxy. Vite proxy is at '/v1' automatically
+            }
+        )
+        if (response.data.token && response.data.metadata) {
+            useAuthStore.getState().setAuth(response.data.token, response.data.metadata)
+        }
+    } catch (error) {
+        console.error('Proactive refresh failed', error)
+        useAuthStore.getState().clearAuth()
+    }
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+    token: null,
+    user: null,
+    isAuthenticated: false,
+    isAdmin: false,
+
+    setAuth: (token, user) => {
+        set({
+            token,
+            user,
+            isAuthenticated: true,
+            isAdmin: user.role === 'ADMIN',
+        })
+
+        if (refreshInterval) {
+            window.clearInterval(refreshInterval)
+        }
+        // Proactive refresh: 9 minutes
+        refreshInterval = window.setInterval(proactiveRefresh, 9 * 60 * 1000)
+    },
+
+    clearAuth: () => {
+        if (refreshInterval) {
+            window.clearInterval(refreshInterval)
+            refreshInterval = undefined
+        }
+        set({
+            token: null,
+            user: null,
+            isAuthenticated: false,
+            isAdmin: false,
+        })
+    },
+}))
