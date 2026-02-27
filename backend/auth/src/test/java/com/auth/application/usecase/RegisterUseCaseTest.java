@@ -9,6 +9,7 @@ package com.auth.application.usecase;
 
 import com.auth.api.dto.auth.MetadataUserResponseDto;
 import com.auth.api.dto.auth.RegisterRequestDto;
+import com.auth.application.service.PasswordGeneratorService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.Role;
 import com.auth.domain.model.User;
@@ -30,6 +31,9 @@ class RegisterUseCaseTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private PasswordGeneratorService passwordGeneratorService;
 
     @InjectMocks
     private RegisterUseCase registerUseCase;
@@ -53,17 +57,18 @@ class RegisterUseCaseTest {
     @DisplayName("Deve registrar um usuário com sucesso e retornar metadados com senha temporária")
     void shouldRegisterSuccessfully() {
         // Arrange
-        when(userService.userRegister(eq(registerRequest), eq(Role.USER), anyString())).thenReturn(testUser);
+        String mockTempPass = "SecureTemp123!";
+        when(passwordGeneratorService.generateTemporaryPassword()).thenReturn(mockTempPass);
+        when(userService.userRegister(eq(registerRequest), eq(Role.USER), eq(mockTempPass))).thenReturn(testUser);
 
         // Act
         MetadataUserResponseDto response = registerUseCase.execute(registerRequest, Role.USER);
 
         // Assert
         assertNotNull(response);
-        assertNotNull(response.tempPassword());
-        assertTrue(response.tempPassword().startsWith("Temp@"));
+        assertEquals(mockTempPass, response.tempPassword());
         assertEquals("newuser", response.username());
         assertEquals("new@example.com", response.email());
-        verify(userService).userRegister(eq(registerRequest), eq(Role.USER), anyString());
+        verify(userService).userRegister(eq(registerRequest), eq(Role.USER), eq(mockTempPass));
     }
 }

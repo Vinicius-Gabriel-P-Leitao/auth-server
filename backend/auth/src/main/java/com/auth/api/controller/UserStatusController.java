@@ -12,6 +12,7 @@ import com.auth.application.usecase.DeactivateUserUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,14 +33,14 @@ public class UserStatusController {
 
     @PatchMapping("/deactivate")
     @Operation(summary = "Desativa um usuário", description = "Altera o status do usuário para inativo. Requer cargo ADMIN e ID via parâmetro.")
-    public ResponseEntity<Void> deactivateUser(@RequestParam UUID id) {
+    public ResponseEntity<@NonNull Void> deactivateUser(@RequestParam UUID id) {
         deactivateUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/activate")
     @Operation(summary = "Ativa um usuário", description = "Altera o status do usuário para ativo. Requer cargo ADMIN e ID via parâmetro.")
-    public ResponseEntity<Void> activateUser(@RequestParam UUID id) {
+    public ResponseEntity<@NonNull Void> activateUser(@RequestParam UUID id) {
         activateUserUseCase.execute(id);
         return ResponseEntity.noContent().build();
     }

@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,14 +36,14 @@ public class RegisterController {
 
     @PostMapping
     @Operation(summary = "Registra um novo usuário comum", description = "Cria uma conta com o cargo USER. Aberto ao público.")
-    public ResponseEntity<MetadataUserResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
+    public ResponseEntity<@NonNull MetadataUserResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
         MetadataUserResponseDto result = registerUseCase.execute(registerRequest, Role.USER);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @PostMapping("/admin")
     @Operation(summary = "Registra um novo administrador", description = "Cria uma conta com o cargo ADMIN. Requer token de administrador.")
-    public ResponseEntity<MetadataUserResponseDto> registerAdmin(@Valid @RequestBody RegisterRequestDto registerRequest) {
+    public ResponseEntity<@NonNull MetadataUserResponseDto> registerAdmin(@Valid @RequestBody RegisterRequestDto registerRequest) {
         MetadataUserResponseDto result = registerUseCase.execute(registerRequest, Role.ADMIN);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,7 @@ public class ListUsersController {
 
     @GetMapping
     @Operation(summary = "Lista usuários com paginação", description = "Retorna uma lista de usuários cadastrados no formato paginado. Apenas para ADMIN.")
-    public ResponseEntity<PaginatedResponseDto<MetadataUserResponseDto>> listUsers(
+    public ResponseEntity<@NonNull PaginatedResponseDto<MetadataUserResponseDto>> listUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "50") int limit,
             HttpServletRequest request

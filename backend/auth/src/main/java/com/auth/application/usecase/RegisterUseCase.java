@@ -9,6 +9,7 @@ package com.auth.application.usecase;
 
 import com.auth.api.dto.auth.MetadataUserResponseDto;
 import com.auth.api.dto.auth.RegisterRequestDto;
+import com.auth.application.service.PasswordGeneratorService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.Role;
 import com.auth.domain.model.User;
@@ -27,9 +28,10 @@ import java.util.Optional;
 public class RegisterUseCase {
 
     private final UserService userService;
+    private final PasswordGeneratorService passwordGeneratorService;
 
     public MetadataUserResponseDto execute(RegisterRequestDto request, Role role) {
-        String tempPassword = "Temp@" + (1000 + (int) (Math.random() * 8999));
+        String tempPassword = passwordGeneratorService.generateTemporaryPassword();
 
         User user = Optional.ofNullable(userService.userRegister(request, role, tempPassword))
                 .orElseThrow(() -> new BadRequestException(

@@ -10,6 +10,7 @@ package com.auth.application.usecase;
 import com.auth.api.dto.password.ChangePasswordRequestDto;
 import com.auth.api.dto.password.FirstChangePasswordRequestDto;
 import com.auth.api.dto.password.ResetPasswordRequestDto;
+import com.auth.application.service.PasswordGeneratorService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.User;
 import com.auth.domain.repository.UserRepository;
@@ -29,6 +30,7 @@ public class PasswordUseCase {
     private final UserService userService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordGeneratorService passwordGeneratorService;
 
     /**
      * Troca a senha do usuário logado (Fluxo Normal).
@@ -64,7 +66,7 @@ public class PasswordUseCase {
     public String resetByAdmin(ResetPasswordRequestDto request) {
         User user = userService.userIsPresent(request.email());
 
-        String tempPassword = "Temp@" + (1000 + (int) (Math.random() * 8999));
+        String tempPassword = passwordGeneratorService.generateTemporaryPassword();
 
         user.setPassword(passwordEncoder.encode(tempPassword));
         user.setPasswordResetRequired(true); // NOTE: Ativa a flag de troca obrigatória

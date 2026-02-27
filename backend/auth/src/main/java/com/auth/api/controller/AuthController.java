@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Realiza o login do usuário", description = "Valida as credenciais, retorna JWT no JSON e envia Refresh Token num cookie HttpOnly.")
-    public ResponseEntity<AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto loginRequest) {
+    public ResponseEntity<@NonNull AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto loginRequest) {
         AuthenticationResult result = loginUseCase.execute(loginRequest);
 
         ResponseCookie cookie = cookieService.buildRefreshTokenCookie(result.refreshToken());
@@ -52,7 +53,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Renova o token de acesso", description = "Lê o Refresh Token do cookie HttpOnly e retorna um novo Access Token.")
-    public ResponseEntity<AuthenticationResponseDto> refresh(@CookieValue(value = "refresh_token", required = true) String refreshTokenCookie) {
+    public ResponseEntity<@NonNull AuthenticationResponseDto> refresh(@CookieValue(value = "refresh_token", required = true) String refreshTokenCookie) {
         RefreshTokenRequestDto refreshRequest = new RefreshTokenRequestDto(refreshTokenCookie);
         AuthenticationResult result = refreshTokenUseCase.execute(refreshRequest);
 
@@ -63,7 +64,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     @Operation(summary = "Logout do usuário", description = "Invalida a sessão destruindo o cookie no navegador.")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<@NonNull Void> logout() {
         ResponseCookie cookie = cookieService.buildLogoutCookie();
 
         return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
@@ -71,7 +72,7 @@ public class AuthController {
 
     @GetMapping("/profile")
     @Operation(summary = "Retorna o perfil do usuário logado", description = "Extrai informações detalhadas do usuário a partir do token JWT enviado no Header.")
-    public ResponseEntity<MetadataUserResponseDto> validateToken(Authentication authentication) {
+    public ResponseEntity<@NonNull MetadataUserResponseDto> validateToken(Authentication authentication) {
         MetadataUserResponseDto response = validationUseCase.execute(authentication);
         return ResponseEntity.ok(response);
     }
