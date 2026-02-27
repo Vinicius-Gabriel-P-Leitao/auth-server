@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach } from "vitest";
+import { afterEach, vi } from "vitest";
 
 // Run cleanup after each UI test
 afterEach(() => {
@@ -35,3 +35,20 @@ if (typeof window !== "undefined" && !window.PointerEvent) {
   }
   window.PointerEvent = PointerEvent as unknown as typeof window.PointerEvent;
 }
+
+// Mock ResizeObserver
+window.ResizeObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock IntersectionObserver
+window.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Mock scrollTo
+window.scrollTo = vi.fn();
