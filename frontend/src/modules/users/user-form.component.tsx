@@ -1,20 +1,27 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Button } from "@components/sh-button/button.component";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@components/sh-dialog/dialog.component";
+import { Input } from "@components/sh-input/input.component";
+import { Label } from "@components/sh-label/label.component";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@components/sh-select/select.component";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getErrorMessage } from "@lib/api-error/api-error.util";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, UserPlus, ShieldPlus, CheckCircle2, Copy } from "lucide-react";
+import { CheckCircle2, Copy, Loader2, ShieldPlus, UserPlus } from "lucide-react";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-
-import { Input } from "../../components/sh-input/input.component";
-import { Button } from "../../components/sh-button/button.component";
-import { Label } from "../../components/sh-label/label.component";
-import { registerAdminSchema, type RegisterAdminFormData } from "./molecule/user.schema";
+import { registerAdminSchema, registerUserSchema } from "./molecule/user.schema";
 import { registerAdminAttempt, registerUserAttempt } from "./services/user.service";
-import { getErrorMessage } from "../../lib/api-error/api-error.util";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../../components/sh-dialog/dialog.component";
 
 type Props = {
   role: "ADMIN" | "USER";
+};
+
+// Unified form data type used by the component (role optional for admin)
+type RegisterFormData = {
+  username: string;
+  email: string;
+  role?: "USER" | "MANAGER";
 };
 
 export function CreateUserDialog({ role }: Props) {
@@ -26,15 +33,13 @@ export function CreateUserDialog({ role }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
-  } = useForm<RegisterAdminFormData>({
-    resolver: zodResolver(registerAdminSchema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(isAdmin ? registerAdminSchema : registerUserSchema),
     mode: "onChange",
-    defaultValues: {
-      username: "",
-      email: "",
-    },
+    defaultValues: isAdmin ? { username: "", email: "" } : { username: "", email: "", role: "USER" },
   });
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -62,8 +67,12 @@ export function CreateUserDialog({ role }: Props) {
     },
   });
 
-  const onSubmit = async (values: RegisterAdminFormData) => {
-    await registerMutation.mutateAsync(values);
+  const onSubmit = async (values: RegisterFormData) => {
+    const payload = isAdmin
+      ? { username: values.username, email: values.email }
+      : { username: values.username, email: values.email, role: values.role };
+
+    await registerMutation.mutateAsync(payload);
   };
 
   return (
@@ -131,8 +140,8 @@ export function CreateUserDialog({ role }: Props) {
               <Input
                 id="username"
                 type="text"
-                placeholder="ex: admin_master"
                 {...register("username")}
+                placeholder="ex: admin_master"
                 className={errors.username ? "border-red-500 focus-visible:ring-red-500" : ""}
               />
               {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>}
@@ -152,6 +161,32 @@ export function CreateUserDialog({ role }: Props) {
               />
               {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
             </div>
+
+            {!isAdmin && (
+              <div className="space-y-1.5">
+                <Label htmlFor="role" className="ml-1">
+                  Cargo
+                </Label>
+
+                <Controller
+                  name="role"
+                  control={control}
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value || "USER"}>
+                      <SelectTrigger className={errors.role ? "border-red-500 focus-visible:ring-red-500" : ""}>
+                        <SelectValue placeholder="Selecione um cargo..." />
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="USER">Usuário</SelectItem>
+                        <SelectItem value="MANAGER">Gerenciador</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.role && <p className="text-xs text-red-500 mt-1">{errors.role.message}</p>}
+              </div>
+            )}
 
             <div className="pt-4 flex justify-end gap-2">
               <Button type="button" variant="ghost" onClick={() => handleOpenChange(false)}>

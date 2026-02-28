@@ -5,6 +5,7 @@ export type RegisterResponseDto = UserResponseDto;
 export type RegisterRequestDto = {
   email: string;
   username: string;
+  role?: "USER" | "MANAGER";
 };
 
 export type PaginationMetaDto = {

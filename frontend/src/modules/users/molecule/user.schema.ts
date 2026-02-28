@@ -9,6 +9,18 @@ export const registerAdminSchema = z.object({
   email: z.email("O e-mail deve ser válido").nonempty("O e-mail não pode estar em branco"),
 });
 
+export const registerUserSchema = z.object({
+  username: z
+    .string()
+    .min(3, "O nome de usuário deve ter no mínimo 3 caracteres")
+    .max(100, "O nome de usuário deve ter no máximo 100 caracteres")
+    .nonempty("O nome de usuário não pode estar em branco"),
+  email: z.email("O e-mail deve ser válido").nonempty("O e-mail não pode estar em branco"),
+  role: z.enum(["USER", "MANAGER"] as const).default("USER"),
+});
+
+export type RegisterUserFormData = z.infer<typeof registerUserSchema>;
+
 export type RegisterAdminFormData = z.infer<typeof registerAdminSchema>;
 
 export const updateUserProfileSchema = z.object({
