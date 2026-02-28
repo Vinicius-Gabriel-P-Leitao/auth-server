@@ -20,8 +20,29 @@ export const updateUserProfileSchema = z.object({
   lives_elsewhere: z.boolean().optional(),
   in_person_work_period: z
     .object({
-      start: z.string().nullable(),
-      end: z.string().nullable(),
+      frequency_cycle_weeks: z.number().int().positive().max(52, "Máximo de 52 semanas"),
+      frequency_week_mask: z.number().int().min(1).max(127, "Máscara inválida"),
+      frequency_duration_days: z.number().int().positive().max(365, "Máximo de 365 dias").nullable().optional(),
+    })
+    .superRefine((data, ctx) => {
+      const hasMask = data.frequency_week_mask > 0;
+      const hasDuration = !!data.frequency_duration_days;
+
+      if (hasMask && hasDuration) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Escolha apenas dias específicos OU período consecutivo, não ambos",
+          path: ["frequency_duration_days"],
+        });
+      }
+
+      if (data.frequency_duration_days && data.frequency_duration_days > 365) {
+        ctx.addIssue({
+          code: "custom",
+          message: "A duração consecutiva não pode ultrapassar 365 dias",
+          path: ["frequency_duration_days"],
+        });
+      }
     })
     .nullable()
     .optional(),

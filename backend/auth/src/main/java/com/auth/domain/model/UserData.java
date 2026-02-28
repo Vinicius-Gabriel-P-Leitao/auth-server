@@ -8,6 +8,8 @@
 package com.auth.domain.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -56,11 +58,20 @@ public class UserData {
     @Column(name = "bl_lives_elsewhere")
     private Boolean livesElsewhere;
 
-    @Column(name = "dt_in_person_work_start")
-    private Instant inPersonWorkStart;
+    @Min(1)
+    @Max(52)
+    @Column(name = "ds_frequency_cycle_weeks")
+    private Integer frequencyCycleWeeks;
 
-    @Column(name = "dt_in_person_work_end")
-    private Instant inPersonWorkEnd;
+    @Min(1)
+    @Max(127)
+    @Column(name = "ds_frequency_week_mask")
+    private Integer frequencyWeekMask;
+
+    @Min(1)
+    @Max(365)
+    @Column(name = "ds_frequency_duration_days")
+    private Integer frequencyDurationDays;
 
     @LastModifiedDate
     @Column(name = "dt_updated_at")

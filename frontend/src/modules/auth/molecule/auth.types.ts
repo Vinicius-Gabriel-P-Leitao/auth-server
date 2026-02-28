@@ -1,6 +1,7 @@
 export type InPersonWorkPeriodDto = {
-  start: string | null;
-  end: string | null;
+  frequency_cycle_weeks: number;
+  frequency_week_mask: number;
+  frequency_duration_days: number | null;
 };
 
 export type UserProfileResponseDto = {

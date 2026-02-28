@@ -7,18 +7,20 @@
  */
 package com.auth.api.dto.auth;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Builder;
-
-import java.time.Instant;
 
 @Builder
 public record InPersonWorkPeriodDto(
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-        @JsonProperty("start") Instant start,
+        @Min(1) @Max(52)
+        @JsonProperty("frequency_cycle_weeks") Integer frequencyCycleWeeks,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
-        @JsonProperty("end") Instant end
+        @Min(0) @Max(127)
+        @JsonProperty("frequency_week_mask") Integer frequencyWeekMask,
+
+        @Min(1) @Max(365)
+        @JsonProperty("frequency_duration_days") Integer frequencyDurationDays
 ) {
 }

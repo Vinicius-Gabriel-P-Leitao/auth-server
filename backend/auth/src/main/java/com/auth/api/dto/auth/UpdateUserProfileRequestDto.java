@@ -30,6 +30,7 @@ public record UpdateUserProfileRequestDto(
 
         @JsonProperty("lives_elsewhere") Boolean livesElsewhere,
 
+        @jakarta.validation.Valid
         @JsonProperty("in_person_work_period") InPersonWorkPeriodDto inPersonWorkPeriod
 ) {
 }

@@ -45,8 +45,9 @@ public class RegisterUseCase {
                 .workRegime(user.getUserData().getWorkRegime())
                 .livesElsewhere(user.getUserData().getLivesElsewhere() != null && user.getUserData().getLivesElsewhere())
                 .inPersonWorkPeriod(InPersonWorkPeriodDto.builder()
-                        .start(user.getUserData().getInPersonWorkStart())
-                        .end(user.getUserData().getInPersonWorkEnd())
+                        .frequencyCycleWeeks(user.getUserData().getFrequencyCycleWeeks())
+                        .frequencyWeekMask(user.getUserData().getFrequencyWeekMask())
+                        .frequencyDurationDays(user.getUserData().getFrequencyDurationDays())
                         .build())
                 .build();
 

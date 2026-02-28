@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import type { UserResponseDto } from "../../auth/molecule/auth.types";
 import { activateUserAttempt, deactivateUserAttempt, getUsersList, resetPasswordAttempt, updateUserProfile } from "../services/user.service";
-import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "./user.schema";
+import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "../molecule/user.schema";
 
 export function UsersTableComponent() {
   const [page, setPage] = useState(0);
@@ -332,6 +332,8 @@ function UserDetailsModal({
   onToggleStatus: () => void;
   isPending: boolean;
 }) {
+  const [hybridMode, setHybridMode] = useState<"specific" | "consecutive">("specific");
+
   const form = useForm({
     defaultValues: {
       username: "",
@@ -354,7 +356,13 @@ function UserDetailsModal({
         work_regime: value.work_regime || undefined,
         username: value.username?.trim() || undefined,
         registration: value.registration?.trim() || null,
-        in_person_work_period: value.in_person_work_period?.start || value.in_person_work_period?.end ? value.in_person_work_period : null,
+        in_person_work_period: value.in_person_work_period?.frequency_cycle_weeks
+          ? {
+              frequency_cycle_weeks: value.in_person_work_period.frequency_cycle_weeks,
+              frequency_week_mask: hybridMode === "specific" ? value.in_person_work_period.frequency_week_mask : 0,
+              frequency_duration_days: hybridMode === "consecutive" ? value.in_person_work_period.frequency_duration_days : null,
+            }
+          : null,
       };
       onUpdate(sanitized);
     },
@@ -370,10 +378,13 @@ function UserDetailsModal({
         registration: user.profile.registration || "",
         lives_elsewhere: user.profile.lives_elsewhere || false,
         in_person_work_period: {
-          start: user.profile.in_person_work_period?.start || null,
-          end: user.profile.in_person_work_period?.end || null,
+          frequency_cycle_weeks: user.profile.in_person_work_period?.frequency_cycle_weeks || 1,
+          frequency_week_mask: user.profile.in_person_work_period?.frequency_week_mask || 0,
+          frequency_duration_days: user.profile.in_person_work_period?.frequency_duration_days || null,
         },
       });
+      // eslint-disable-next-line
+      setHybridMode(user.profile.in_person_work_period?.frequency_duration_days ? "consecutive" : "specific");
     }
   }, [user, open, form]);
 
@@ -577,95 +588,140 @@ function UserDetailsModal({
                         workRegime === "HYBRID" ? (
                           <div className="sm:col-span-2 pt-4 border-t border-gray-100">
                             <Label className="text-[10px] font-bold text-gray-500 ml-1 mb-2 block">Período de Trabalho (Dias Presenciais)</Label>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-6">
                               <form.Field
-                                name="in_person_work_period.start"
+                                name="in_person_work_period.frequency_cycle_weeks"
                                 children={(field) => (
                                   <div className="space-y-1.5">
-                                    <span className="text-[10px] font-bold text-gray-400 ml-1">A partir de</span>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <Button
-                                          variant="ghost"
+                                    <span className="text-[10px] font-bold text-gray-400 ml-1">Repetir a cada (semanas)</span>
+                                    <div className="flex items-center gap-4">
+                                      <div className="relative">
+                                        <Input
+                                          type="number"
+                                          min={1}
+                                          max={52}
+                                          value={field.state.value || ""}
+                                          onChange={(event) => field.handleChange(parseInt(event.target.value) || 0)}
                                           className={cn(
-                                            "w-full h-10 justify-start text-left font-medium rounded-xl bg-gray-50/50 border border-gray-100 hover:bg-white transition-all px-3 text-sm",
-                                            !field.state.value && "text-muted-foreground",
+                                            "h-12 w-28 rounded-2xl bg-gray-50/50 border-gray-100 focus:bg-white transition-all text-lg font-bold px-4 text-center shadow-inner",
+                                            field.state.meta.errors.length > 0 && "border-red-500 bg-red-50/50",
                                           )}
-                                        >
-                                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
-                                          {field.state.value && typeof field.state.value === "string" ? (
-                                            format(parseISO(field.state.value), "PPP", { locale: ptBR })
-                                          ) : (
-                                            <span>Selecione</span>
-                                          )}
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto p-0 rounded-2xl border-gray-100 shadow-2xl" align="start">
-                                        <Calendar
-                                          mode="single"
-                                          locale={ptBR}
-                                          className="rounded-2xl"
-                                          captionLayout="dropdown"
-                                          startMonth={new Date(1900, 0)}
-                                          endMonth={new Date(new Date().getFullYear() + 10, 11)}
-                                          disabled={(date) => date < new Date("1900-01-01")}
-                                          onSelect={(date) => field.handleChange(date?.toISOString())}
-                                          selected={
-                                            field.state.value && typeof field.state.value === "string" ? parseISO(field.state.value) : undefined
-                                          }
-                                          defaultMonth={
-                                            field.state.value && typeof field.state.value === "string" ? parseISO(field.state.value) : undefined
-                                          }
                                         />
-                                      </PopoverContent>
-                                    </Popover>
+                                      </div>
+                                      <span className="text-sm font-bold text-gray-500 bg-gray-50/80 px-4 py-2 rounded-xl border border-gray-100">
+                                        {(() => {
+                                          const val = field.state.value;
+                                          if (typeof val !== "number") return "semana(s)";
+                                          if (val === 52) return "≈ 12 meses";
+                                          if (val === 4) return "≈ 1 mês";
+                                          if (val > 4) return `≈ ${Math.floor(val / 4)} meses`;
+                                          return "semana(s)";
+                                        })()}
+                                      </span>
+                                    </div>
+                                    {field.state.meta.errors.length > 0 && (
+                                      <p className="text-[10px] text-red-500 font-bold mt-1 ml-1 flex items-center gap-1 animate-in fade-in slide-in-from-left-1">
+                                        <ShieldAlert className="w-3 h-3" />
+                                        {field.state.meta.errors[0]?.message || field.state.meta.errors[0]?.toString()}
+                                      </p>
+                                    )}
                                   </div>
                                 )}
                               />
-                              <form.Field
-                                name="in_person_work_period.end"
-                                children={(field) => (
-                                  <div className="space-y-1.5">
-                                    <span className="text-[10px] font-bold text-gray-400 ml-1">Até</span>
-                                    <Popover>
-                                      <PopoverTrigger asChild>
-                                        <Button
-                                          variant="ghost"
+
+                              <div className="space-y-3 pt-2 border-t border-gray-100">
+                                <span className="text-[10px] font-bold text-gray-400 ml-1 block">Modo de Frequência</span>
+                                <div className="flex bg-gray-50/80 p-1.5 rounded-2xl border border-gray-100 w-fit shadow-inner">
+                                  <button
+                                    type="button"
+                                    onClick={() => setHybridMode("specific")}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${hybridMode === "specific" ? "bg-white text-primary-600 shadow-sm border border-gray-200/50 scale-[1.02]" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"}`}
+                                  >
+                                    Dias específicos
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setHybridMode("consecutive")}
+                                    className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${hybridMode === "consecutive" ? "bg-white text-primary-600 shadow-sm border border-gray-200/50 scale-[1.02]" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"}`}
+                                  >
+                                    Período consecutivo
+                                  </button>
+                                </div>
+                              </div>
+
+                              {hybridMode === "specific" ? (
+                                <form.Field
+                                  name="in_person_work_period.frequency_week_mask"
+                                  children={(field) => {
+                                    const mask = typeof field.state.value === "number" ? field.state.value : 0;
+                                    const DAYS = [
+                                      { id: "mon", label: "Seg", val: 1 },
+                                      { id: "tue", label: "Ter", val: 2 },
+                                      { id: "wed", label: "Qua", val: 4 },
+                                      { id: "thu", label: "Qui", val: 8 },
+                                      { id: "fri", label: "Sex", val: 16 },
+                                      { id: "sat", label: "Sáb", val: 32 },
+                                      { id: "sun", label: "Dom", val: 64 },
+                                    ];
+
+                                    return (
+                                      <div className="space-y-2 mt-2">
+                                        <span className="text-[10px] font-bold text-gray-400 ml-1 block">Dias Selecionados</span>
+                                        <div className="flex flex-wrap gap-2.5">
+                                          {DAYS.map((day) => {
+                                            const isChecked = (mask & day.val) === day.val;
+                                            return (
+                                              <button
+                                                key={day.id}
+                                                type="button"
+                                                onClick={() => {
+                                                  if (isChecked) {
+                                                    field.handleChange(mask & ~day.val);
+                                                  } else {
+                                                    field.handleChange(mask | day.val);
+                                                  }
+                                                }}
+                                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-sm font-bold transition-all duration-300 ${isChecked ? "bg-primary-600 text-white shadow-[0_8px_16px_-6px_rgba(79,70,229,0.4)] scale-110 border-0" : "bg-white border-2 border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600 hover:bg-gray-50/50"}`}
+                                              >
+                                                {day.label}
+                                              </button>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                    );
+                                  }}
+                                />
+                              ) : (
+                                <form.Field
+                                  name="in_person_work_period.frequency_duration_days"
+                                  children={(field) => (
+                                    <div className="space-y-1.5 mt-2">
+                                      <span className="text-[10px] font-bold text-gray-400 ml-1">Duração Consecutiva (Dias)</span>
+                                      <div className="flex items-center gap-3">
+                                        <Input
+                                          type="number"
+                                          min={1}
+                                          value={field.state.value || ""}
+                                          onChange={(e) => field.handleChange(e.target.value ? parseInt(e.target.value) : null)}
+                                          placeholder="Ex: 7"
                                           className={cn(
-                                            "w-full h-10 justify-start text-left font-medium rounded-xl bg-gray-50/50 border border-gray-100 hover:bg-white transition-all px-3 text-sm",
-                                            !field.state.value && "text-muted-foreground",
+                                            "h-12 w-32 rounded-2xl bg-white border-2 border-gray-100 focus:border-primary-500 focus:bg-white transition-all text-lg font-bold px-4 shadow-sm",
+                                            field.state.meta.errors.length > 0 && "border-red-500 bg-red-50",
                                           )}
-                                        >
-                                          <CalendarIcon className="mr-2 h-4 w-4 text-gray-400" />
-                                          {field.state.value && typeof field.state.value === "string" ? (
-                                            format(parseISO(field.state.value), "PPP", { locale: ptBR })
-                                          ) : (
-                                            <span>Selecione</span>
-                                          )}
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto p-0 rounded-2xl border-gray-100 shadow-2xl" align="start">
-                                        <Calendar
-                                          mode="single"
-                                          locale={ptBR}
-                                          className="rounded-2xl"
-                                          captionLayout="dropdown"
-                                          startMonth={new Date(1900, 0)}
-                                          endMonth={new Date(new Date().getFullYear() + 10, 11)}
-                                          disabled={(date) => date < new Date("1900-01-01")}
-                                          onSelect={(date) => field.handleChange(date?.toISOString())}
-                                          selected={
-                                            field.state.value && typeof field.state.value === "string" ? parseISO(field.state.value) : undefined
-                                          }
-                                          defaultMonth={
-                                            field.state.value && typeof field.state.value === "string" ? parseISO(field.state.value) : undefined
-                                          }
                                         />
-                                      </PopoverContent>
-                                    </Popover>
-                                  </div>
-                                )}
-                              />
+                                        <span className="text-sm font-bold text-gray-500">dia(s)</span>
+                                      </div>
+                                      {field.state.meta.errors.length > 0 && (
+                                        <p className="text-[10px] text-red-500 font-bold mt-2 ml-1 flex items-center gap-1 animate-in fade-in slide-in-from-left-1">
+                                          <ShieldAlert className="w-3 h-3" />
+                                          {field.state.meta.errors[0]?.message || field.state.meta.errors[0]?.toString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+                                />
+                              )}
                             </div>
                           </div>
                         ) : null

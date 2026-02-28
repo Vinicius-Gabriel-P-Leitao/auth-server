@@ -3,7 +3,7 @@ import { useAuthStore } from "../../store/auth.store";
 import { logoutAttempt } from "../auth/services/auth.service";
 import { Button } from "../../components/sh-button/button.component";
 import { CreateUserDialog } from "./user-form.component";
-import { UsersTableComponent } from "./molecule/users-table.component";
+import { UsersTableComponent } from "./atom/users-table.component";
 
 export function UsersPage() {
   const { user } = useAuthStore();

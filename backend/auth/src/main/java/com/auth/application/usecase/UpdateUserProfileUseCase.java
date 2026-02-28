@@ -41,8 +41,21 @@ public class UpdateUserProfileUseCase {
         if (request.livesElsewhere() != null) data.setLivesElsewhere(request.livesElsewhere());
         
         if (request.inPersonWorkPeriod() != null) {
-            data.setInPersonWorkStart(request.inPersonWorkPeriod().start());
-            data.setInPersonWorkEnd(request.inPersonWorkPeriod().end());
+            Integer cycles = request.inPersonWorkPeriod().frequencyCycleWeeks();
+            Integer mask = request.inPersonWorkPeriod().frequencyWeekMask();
+            Integer duration = request.inPersonWorkPeriod().frequencyDurationDays();
+
+            if (mask != null && mask > 0 && duration != null) {
+                duration = null;
+            }
+            
+            if (duration != null && duration > 365) {
+                throw new com.auth.infra.exception.custom.BadRequestException(ErrorCode.BAD_REQUEST, "A duração consecutiva não pode ultrapassar 365 dias");
+            }
+
+            data.setFrequencyCycleWeeks(cycles != null ? cycles : 1);
+            data.setFrequencyWeekMask(duration != null ? 0 : (mask != null ? mask : 0));
+            data.setFrequencyDurationDays(duration);
         }
 
         userRepository.save(user);
@@ -56,8 +69,9 @@ public class UpdateUserProfileUseCase {
                 .workRegime(data.getWorkRegime())
                 .livesElsewhere(data.getLivesElsewhere() != null && data.getLivesElsewhere())
                 .inPersonWorkPeriod(InPersonWorkPeriodDto.builder()
-                        .start(data.getInPersonWorkStart())
-                        .end(data.getInPersonWorkEnd())
+                        .frequencyCycleWeeks(data.getFrequencyCycleWeeks())
+                        .frequencyWeekMask(data.getFrequencyWeekMask())
+                        .frequencyDurationDays(data.getFrequencyDurationDays())
                         .build())
                 .build();
 
