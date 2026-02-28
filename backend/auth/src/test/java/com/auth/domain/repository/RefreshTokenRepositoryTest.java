@@ -9,7 +9,7 @@ package com.auth.domain.repository;
 
 import com.auth.domain.model.RefreshToken;
 import com.auth.domain.model.Role;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +31,12 @@ class RefreshTokenRepositoryTest {
     private RefreshTokenRepository refreshTokenRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAuthRepository userRepository;
 
     @Test
     @DisplayName("Deve salvar e buscar refresh token")
     void shouldSaveAndFindByToken() {
-        User user = new User();
+        UserAuth user = new UserAuth();
         user.setUserName("token-owner");
         user.setEmail("owner@example.com");
         user.setPassword("pass");
@@ -44,7 +44,7 @@ class RefreshTokenRepositoryTest {
         userRepository.saveAndFlush(user);
 
         RefreshToken token = RefreshToken.builder()
-                .token("my-unique-token")
+                .session().accessToken("my-unique-token")
                 .user(user)
                 .expiryDate(Instant.now().plusSeconds(3600))
                 .build();
@@ -59,7 +59,7 @@ class RefreshTokenRepositoryTest {
     @Test
     @DisplayName("Deve deletar tokens por usuário")
     void shouldDeleteByUser() {
-        User user = new User();
+        UserAuth user = new UserAuth();
         user.setUserName("deleted-owner");
         user.setEmail("deleted@example.com");
         user.setPassword("pass");
@@ -67,7 +67,7 @@ class RefreshTokenRepositoryTest {
         userRepository.saveAndFlush(user);
 
         RefreshToken token = RefreshToken.builder()
-                .token("delete-me")
+                .session().accessToken("delete-me")
                 .user(user)
                 .expiryDate(Instant.now().plusSeconds(3600))
                 .build();

@@ -35,9 +35,15 @@ public class RegisterController {
     private final RegisterUseCase registerUseCase;
 
     @PostMapping
-    @Operation(summary = "Registra um novo usuário comum", description = "Cria uma conta com o cargo USER. Aberto ao público.")
+    @Operation(summary = "Registra um novo usuário comum", description = "Cria uma conta com o cargo USER ou MANAGER. Aberto ao público.")
     public ResponseEntity<@NonNull UserResponseDto> register(@Valid @RequestBody RegisterRequestDto registerRequest) {
-        UserResponseDto result = registerUseCase.execute(registerRequest, Role.USER);
+        Role requestedRole = registerRequest.role();
+        
+        if (requestedRole == Role.ADMIN) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        UserResponseDto result = registerUseCase.execute(registerRequest, requestedRole);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 

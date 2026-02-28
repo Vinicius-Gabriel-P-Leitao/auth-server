@@ -14,9 +14,9 @@ import com.auth.api.dto.password.FirstChangePasswordRequestDto;
 import com.auth.api.dto.password.ResetPasswordRequestDto;
 import com.auth.api.dto.token.RefreshTokenRequestDto;
 import com.auth.domain.model.Role;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import com.auth.domain.repository.RefreshTokenRepository;
-import com.auth.domain.repository.UserRepository;
+import com.auth.domain.repository.UserAuthRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +55,7 @@ class AuthE2ETest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAuthRepository userRepository;
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
@@ -76,7 +76,7 @@ class AuthE2ETest {
     @DisplayName("Fluxo Completo: Registro -> Login com Senha Temporária -> Troca Senha -> Login Final -> Profile -> Refresh -> Profile")
     void fullAuthFlow() throws Exception {
         // 0. Bootstrap Admin para poder registrar usuários (regra nova: register é ADMIN only)
-        User admin = new User();
+        UserAuth admin = new UserAuth();
         admin.setUserName("admin-bootstrap");
         admin.setEmail("admin-boot@auth.com");
         admin.setPassword(passwordEncoder.encode("admin123"));
@@ -89,10 +89,10 @@ class AuthE2ETest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(adminLogin)))
                 .andReturn();
-        String adminToken = objectMapper.readValue(adminLoginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).token();
+        String adminToken = objectMapper.readValue(adminLoginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).session().accessToken();
 
         // 1. Registro (usando token do admin)
-        RegisterRequestDto regRequest = new RegisterRequestDto("e2euser", "e2e@example.com");
+        RegisterRequestDto regRequest = new RegisterRequestDto("e2euser", "e2e@example.com", Role.USER);
         MvcResult regResult = mockMvc.perform(post("/v1/user/register")
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +102,7 @@ class AuthE2ETest {
 
         // Captura senha temporária
         Map<String, Object> regResponse = objectMapper.readValue(regResult.getResponse().getContentAsString(), Map.class);
-        String tempPassword = (String) regResponse.get("temp_password");
+        String tempPassword = (String) regResponse.get("tempPassword");
         assertNotNull(tempPassword);
 
         // 2. Login com senha temporária
@@ -114,7 +114,7 @@ class AuthE2ETest {
                 .andExpect(jsonPath("$.password_reset_required").value(true))
                 .andReturn();
 
-        String intermediateToken = objectMapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).token();
+        String intermediateToken = objectMapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).session().accessToken();
 
         // 3. Troca de senha obrigatória
         FirstChangePasswordRequestDto changeRequest = new FirstChangePasswordRequestDto("new-secure-password");
@@ -135,7 +135,7 @@ class AuthE2ETest {
 
         String responseBody = finalLoginResult.getResponse().getContentAsString();
         AuthenticationResponseDto authResponse = objectMapper.readValue(responseBody, AuthenticationResponseDto.class);
-        String accessToken = authResponse.token();
+        String accessToken = authResponse.session().accessToken();
         
         Cookie cookie = finalLoginResult.getResponse().getCookie("refresh_token");
         assertNotNull(cookie);
@@ -158,7 +158,7 @@ class AuthE2ETest {
 
         String newResponseBody = refreshResult.getResponse().getContentAsString();
         AuthenticationResponseDto newAuthResponse = objectMapper.readValue(newResponseBody, AuthenticationResponseDto.class);
-        String newAccessToken = newAuthResponse.token();
+        String newAccessToken = newAuthResponse.session().accessToken();
 
         // 7. Acessar Profile com novo token
         mockMvc.perform(get("/v1/user/profile")
@@ -172,7 +172,7 @@ class AuthE2ETest {
     @DisplayName("Fluxo de Segurança: Admin Reset -> Login -> First Change")
     void adminResetFlow() throws Exception {
         // 1. Criar admin diretamente no banco para bootstrap
-        User admin = new User();
+        UserAuth admin = new UserAuth();
         admin.setUserName("admin-e2e");
         admin.setEmail("admin-e2e@auth.com");
         admin.setPassword(passwordEncoder.encode("admin123"));
@@ -186,10 +186,10 @@ class AuthE2ETest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(adminLogin)))
                 .andReturn();
-        String adminToken = objectMapper.readValue(adminLoginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).token();
+        String adminToken = objectMapper.readValue(adminLoginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).session().accessToken();
 
         // 2. Criar usuário normal
-        RegisterRequestDto regRequest = new RegisterRequestDto("user-to-reset", "to-reset@example.com");
+        RegisterRequestDto regRequest = new RegisterRequestDto("to-reset", "to-reset@example.com", Role.USER);
         mockMvc.perform(post("/v1/user/register")
                 .header("Authorization", "Bearer " + adminToken)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -206,7 +206,7 @@ class AuthE2ETest {
                 .andReturn();
 
         Map<String, String> resetResponse = objectMapper.readValue(resetResult.getResponse().getContentAsString(), Map.class);
-        String tempPassword = resetResponse.get("temp_password");
+        String tempPassword = resetResponse.get("tempPassword");
 
         // 4. Usuário tenta logar com a senha temporária
         AuthenticationRequestDto loginRequest = new AuthenticationRequestDto("to-reset@example.com", tempPassword);
@@ -217,7 +217,7 @@ class AuthE2ETest {
                 .andExpect(jsonPath("$.password_reset_required").value(true))
                 .andReturn();
 
-        String userToken = objectMapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).token();
+        String userToken = objectMapper.readValue(loginResult.getResponse().getContentAsString(), AuthenticationResponseDto.class).session().accessToken();
 
         // 5. Usuário troca a senha definitivamente
         FirstChangePasswordRequestDto changeRequest = new FirstChangePasswordRequestDto("new-definitive-password");

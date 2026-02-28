@@ -7,12 +7,12 @@
  */
 package com.auth.application.usecase;
 
-import com.auth.api.dto.auth.MetadataUserResponseDto;
+import com.auth.api.dto.auth.UserResponseDto;
 import com.auth.api.dto.auth.RegisterRequestDto;
 import com.auth.application.service.PasswordGeneratorService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.Role;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,19 +38,19 @@ class RegisterUseCaseTest {
     @InjectMocks
     private RegisterUseCase registerUseCase;
 
-    private User testUser;
+    private UserAuth testUser;
     private RegisterRequestDto registerRequest;
 
     @BeforeEach
     void setUp() {
-        testUser = new User();
+        testUser = new UserAuth();
         testUser.setUserId(UUID.randomUUID());
         testUser.setUserName("newuser");
         testUser.setEmail("new@example.com");
         testUser.setRole(Role.USER);
         testUser.setActive(true);
 
-        registerRequest = new RegisterRequestDto("newuser", "new@example.com");
+        registerRequest = new RegisterRequestDto("newuser", "new@example.com", Role.USER);
     }
 
     @Test
@@ -62,7 +62,7 @@ class RegisterUseCaseTest {
         when(userService.userRegister(eq(registerRequest), eq(Role.USER), eq(mockTempPass))).thenReturn(testUser);
 
         // Act
-        MetadataUserResponseDto response = registerUseCase.execute(registerRequest, Role.USER);
+        UserResponseDto response = registerUseCase.execute(registerRequest, Role.USER);
 
         // Assert
         assertNotNull(response);

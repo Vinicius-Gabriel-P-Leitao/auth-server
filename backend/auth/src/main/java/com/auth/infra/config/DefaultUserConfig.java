@@ -32,8 +32,7 @@ public class DefaultUserConfig {
         return args -> {
             // Verifica se o admin já existe para evitar duplicidade
             if (userRepository.findByEmail(adminEmail).isEmpty()) {
-                RegisterRequestDto registerRequestDTO = new RegisterRequestDto(
-                        adminUsername, adminEmail);
+                RegisterRequestDto registerRequestDTO = new RegisterRequestDto(adminUsername, adminEmail, Role.ADMIN);
 
                 userService.userRegister(registerRequestDTO, Role.ADMIN, adminPassword);
             }

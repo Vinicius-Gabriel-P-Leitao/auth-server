@@ -8,7 +8,7 @@
 package com.auth.domain.repository;
 
 import com.auth.domain.model.Role;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +26,20 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRepositoryTest {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserAuthRepository userRepository;
 
     @Test
     @DisplayName("Deve salvar e buscar usuário por username e e-mail")
     void shouldSaveAndFindByUsernameAndEmail() {
-        User user = new User();
+        UserAuth user = new UserAuth();
         user.setUserName("db-user");
         user.setEmail("db@example.com");
         user.setPassword("pass");
         user.setRole(Role.USER);
         userRepository.saveAndFlush(user);
 
-        Optional<User> foundByName = userRepository.findByUserName("db-user");
-        Optional<User> foundByEmail = userRepository.findByEmail("db@example.com");
+        Optional<UserAuth> foundByName = userRepository.findByUserName("db-user");
+        Optional<UserAuth> foundByEmail = userRepository.findByEmail("db@example.com");
 
         assertTrue(foundByName.isPresent());
         assertTrue(foundByEmail.isPresent());
@@ -51,7 +51,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Deve retornar vazio para e-mail inexistente")
     void shouldReturnEmptyForNonExistentUser() {
-        Optional<User> found = userRepository.findByEmail("ghost@example.com");
+        Optional<UserAuth> found = userRepository.findByEmail("ghost@example.com");
         assertTrue(found.isEmpty());
     }
 }

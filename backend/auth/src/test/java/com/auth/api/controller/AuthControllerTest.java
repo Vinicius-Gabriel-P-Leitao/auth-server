@@ -9,8 +9,7 @@ package com.auth.api.controller;
 
 import com.auth.api.dto.auth.AuthenticationRequestDto;
 import com.auth.api.dto.auth.AuthenticationResponseDto;
-import com.auth.api.dto.auth.MetadataUserResponseDto;
-import com.auth.api.dto.token.RefreshTokenRequestDto;
+import com.auth.api.dto.auth.UserResponseDto;
 import com.auth.application.dto.AuthenticationResult;
 import com.auth.application.usecase.LoginUseCase;
 import com.auth.application.usecase.RefreshTokenUseCase;
@@ -67,8 +66,8 @@ class AuthControllerTest {
         AuthenticationRequestDto request = new AuthenticationRequestDto("admin@auth.com", "admin123");
         
         AuthenticationResponseDto responseDto = AuthenticationResponseDto.builder()
-                .token("fake-jwt")
-                .metadata(MetadataUserResponseDto.builder().username("admin").email("admin@auth.com").build())
+                .session().accessToken("fake-jwt")
+                .user(UserResponseDto.builder().username("admin").email("admin@auth.com").build())
                 .build();
 
         AuthenticationResult result = new AuthenticationResult(responseDto, "fake-refresh");

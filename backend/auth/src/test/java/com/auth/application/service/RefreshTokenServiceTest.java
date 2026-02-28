@@ -8,7 +8,7 @@
 package com.auth.application.service;
 
 import com.auth.domain.model.RefreshToken;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import com.auth.domain.repository.RefreshTokenRepository;
 import com.auth.infra.exception.custom.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,7 @@ class RefreshTokenServiceTest {
     @Test
     @DisplayName("Deve criar novo refresh token limpando os antigos")
     void shouldCreateToken() {
-        User user = new User();
+        UserAuth user = new UserAuth();
         user.setUserName("tester");
         user.setEmail("tester@example.com");
         when(refreshTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);

@@ -14,7 +14,7 @@ import com.auth.application.service.RefreshTokenService;
 import com.auth.application.service.UserService;
 import com.auth.domain.model.RefreshToken;
 import com.auth.domain.model.Role;
-import com.auth.domain.model.User;
+import com.auth.domain.model.UserAuth;
 import com.auth.infra.security.service.JwtGeneratorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,12 +42,12 @@ class RefreshTokenUseCaseTest {
     @InjectMocks
     private RefreshTokenUseCase refreshTokenUseCase;
 
-    private User testUser;
+    private UserAuth testUser;
     private RefreshToken oldToken;
 
     @BeforeEach
     void setUp() {
-        testUser = new User();
+        testUser = new UserAuth();
         testUser.setUserName("testuser");
         testUser.setEmail("test@example.com");
         testUser.setRole(Role.USER);
@@ -77,7 +77,7 @@ class RefreshTokenUseCaseTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals("new-jwt", response.token());
+        assertEquals("new-jwt", response.session().accessToken());
         assertEquals("new-refresh-token", result.refreshToken());
         verify(userService).incrementTokenVersion(testUser);
         verify(refreshTokenService).verifyExpiration(oldToken);

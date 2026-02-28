@@ -53,7 +53,7 @@ public class PasswordController {
         String tempPass = passwordUseCase.resetByAdmin(request);
         return ResponseEntity.ok(Map.of(
                 "status", "Senha resetada pelo administrador",
-                "temp_password", tempPass
+                "tempPassword", tempPass
         ));
     }
 }

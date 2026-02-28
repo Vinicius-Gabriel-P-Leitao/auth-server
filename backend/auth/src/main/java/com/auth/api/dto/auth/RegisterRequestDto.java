@@ -7,6 +7,7 @@
  */
 package com.auth.api.dto.auth;
 
+import com.auth.domain.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Email;
@@ -24,6 +25,12 @@ public record RegisterRequestDto(
         @Email(message = "O e-mail deve ser válido")
         @NotBlank(message = "O e-mail não pode estar em branco")
         @JsonProperty("email")
-        String email
+        String email,
+
+        @JsonProperty("role")
+        Role role
 ) {
+    public Role role() {
+        return role != null ? role : Role.USER;
+    }
 }
