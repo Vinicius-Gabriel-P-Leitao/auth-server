@@ -19,6 +19,7 @@ import {
   Eye,
   KeyRound,
   MapPin,
+  RefreshCw,
   Save,
   Shield,
   ShieldAlert,
@@ -343,6 +344,7 @@ export function UserDetailsModal({
                         )}
                       />
                     </div>
+
                     <div className="space-y-2">
                       <Label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Regime de Trabalho</Label>
                       <Controller
@@ -542,6 +544,7 @@ export function UserDetailsModal({
                             }}
                           />
                         </div>
+
                         <div className={hybridMode === "consecutive" ? "block animate-in fade-in zoom-in-95 duration-200" : "hidden"}>
                           <Controller
                             name="inPersonWorkPeriod.frequencyDurationDays"
@@ -583,79 +586,124 @@ export function UserDetailsModal({
                   </div>
                 ) : null}
               </TabsContent>
+              
               {/* --- GOVERNANCE SECTION --- */}
               <TabsContent value="governance" className="m-0 space-y-8 outline-none animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex items-center gap-4 border-b border-gray-100 pb-6 mb-10">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-amber-600" />
+                <div className="flex items-center gap-4 border-b border-gray-100 pb-6 mb-8">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-amber-600" />
                   </div>
 
                   <div>
-                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Status & Governança</h3>
-                    <p className="text-sm text-gray-500 font-medium">Controle de acesso do sistema.</p>
+                    <h3 className="text-xl font-black text-gray-900 tracking-tight">Status & Governança</h3>
+                    <p className="text-xs text-gray-500 font-medium">Controle de acesso e auditoria.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                  <div className="space-y-8">
-                    <div className="p-8 rounded-3xl bg-gray-50/80 border border-gray-100 text-center relative overflow-hidden">
-                      <span className="block text-[11px] font-black text-gray-400 uppercase mb-5 tracking-widest">Status Autenticado</span>
-                      <div className="flex items-center justify-center gap-3 relative z-10">
-                        {user.active ? (
-                          <span className="px-6 py-3.5 rounded-2xl text-lg font-bold bg-emerald-100 text-emerald-800 border-2 border-emerald-200/60 flex items-center gap-2 shadow-sm">
-                            <Check className="w-6 h-6" /> Ativo Confirmed
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  {/* LEFT COLUMN: STATUS & ROLES */}
+                  <div className="lg:col-span-12 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* STATUS CARD */}
+                      <div className="p-6 rounded-3xl bg-gray-50/50 border border-gray-100 flex items-center justify-between gap-6 overflow-hidden relative">
+                        <div className="relative z-10 flex flex-col shrink-0">
+                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status da Conta</span>
+                          {user.active ? (
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold bg-emerald-100/80 text-emerald-800 border border-emerald-200/50 shadow-sm w-fit">
+                              <Check className="w-4 h-4" /> Ativo
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold bg-red-100/80 text-red-800 border border-red-200/50 shadow-sm w-fit">
+                              <X className="w-4 h-4" /> Bloqueado
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2 relative z-10 shrink-0">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="h-10 w-10 p-0 rounded-xl border-amber-200 bg-amber-50/50 text-amber-700 hover:bg-amber-100 transition-all shadow-sm"
+                            onClick={onReset}
+                            disabled={isPending}
+                            title="Resetar Senha"
+                          >
+                            <KeyRound className="w-4 h-4" />
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className={cn(
+                              "h-10 px-4 rounded-xl font-bold transition-all shadow-sm text-xs",
+                              user.active
+                                ? "border-red-200 bg-red-50/50 text-red-700 hover:bg-red-100"
+                                : "border-emerald-200 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100",
+                            )}
+                            onClick={onToggleStatus}
+                            disabled={isPending}
+                          >
+                            {user.active ? (
+                              <>
+                                <UserX className="w-4 h-4 mr-2 opacity-70" /> Bloquear
+                              </>
+                            ) : (
+                              <>
+                                <UserCheck className="w-4 h-4 mr-2 opacity-70" /> Ativar
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* AUDIT SUMMARY */}
+                      <div className="p-5 rounded-3xl bg-white border border-gray-100 flex flex-col justify-center gap-3">
+                        <div className="flex items-center justify-between border-b border-gray-50 pb-2">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <Activity className="w-3 h-3" /> Data de Ingresso
                           </span>
-                        ) : (
-                          <span className="px-6 py-3.5 rounded-2xl text-lg font-bold bg-red-100 text-red-800 border-2 border-red-200/60 flex items-center gap-2 shadow-sm">
-                            <X className="w-6 h-6" /> Inativo Blocked
+                          <span className="text-xs font-bold text-gray-800">
+                            {user.audit.createdAt ? format(new Date(user.audit.createdAt), "dd/MM/yyyy HH:mm") : "-"}
                           </span>
-                        )}
+                        </div>
+                        <div className="flex items-center justify-between border-b border-gray-50 pb-2">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <RefreshCw className="w-3 h-3" /> modificação
+                          </span>
+                          <span className="text-xs font-bold text-amber-700">
+                            {user.audit.updatedAt ? format(new Date(user.audit.updatedAt), "dd/MM/yyyy HH:mm") : "-"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                            <User className="w-3 h-3" /> Responsável
+                          </span>
+                          <span className="text-[10px] font-black text-primary-600 uppercase tracking-tighter truncate max-w-[120px]">
+                            {user.audit.updatedBy || "system"}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full h-16 rounded-2xl justify-start font-bold border-amber-200 bg-amber-50/50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 hover:border-amber-300 transition-all px-6 shadow-sm text-base"
-                        onClick={onReset}
-                        disabled={isPending}
-                      >
-                        <KeyRound className="w-6 h-6 mr-4 opacity-70" /> Resetar Senha Alpha
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={`w-full h-16 rounded-2xl justify-start font-bold transition-all px-6 shadow-sm text-base ${user.active ? "border-red-200 bg-red-50/50 text-red-700 hover:bg-red-100 hover:text-red-800 hover:border-red-300" : "border-emerald-200 bg-emerald-50/50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 hover:border-emerald-300"}`}
-                        onClick={onToggleStatus}
-                        disabled={isPending}
-                      >
-                        {user.active ? (
-                          <>
-                            <UserX className="w-6 h-6 mr-4 opacity-70" /> Bloquear Acesso
-                          </>
-                        ) : (
-                          <>
-                            <UserCheck className="w-6 h-6 mr-4 opacity-70" /> Liberar Acesso
-                          </>
-                        )}
-                      </Button>
-                    </div>
-
-                    <div className="space-y-4 pt-6 mt-6 border-t border-gray-100">
-                      <div className="flex items-center gap-2 mb-2">
-                        <ShieldAlert className="w-5 h-5 text-amber-500" />
-                        <h4 className="text-[12px] font-black text-gray-500 uppercase tracking-widest">Gestão de Cargos</h4>
+                    {/* ROLE MANAGEMENT - HORIZONTAL */}
+                    <div className="p-6 md:p-8 rounded-3xl bg-gray-50/30 border border-gray-100 space-y-5">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <ShieldAlert className="w-5 h-5 text-amber-500" />
+                          <h4 className="text-[11px] font-black text-gray-500 uppercase tracking-widest">Níveis de Acesso</h4>
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-400 italic">Mínimo 1 cargo exigido</span>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         {["ROLE_ADMIN", "ROLE_MANAGER", "ROLE_USER"].map((role) => (
                           <div
                             key={role}
                             className={cn(
-                              "flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer group",
-                              selectedRoles.includes(role) ? "bg-primary-50/50 border-primary-200" : "bg-white border-gray-100 hover:border-gray-200",
+                              "flex flex-col items-start p-4 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden",
+                              selectedRoles.includes(role)
+                                ? "bg-white border-primary-300 shadow-md ring-1 ring-primary-100/50"
+                                : "bg-white/40 border-gray-100 hover:border-gray-200 hover:bg-white",
                             )}
                             onClick={() => {
                               if (selectedRoles.includes(role)) {
@@ -669,82 +717,56 @@ export function UserDetailsModal({
                               }
                             }}
                           >
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={cn(
-                                  "w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all",
-                                  selectedRoles.includes(role) ? "bg-primary-600 border-primary-600" : "border-gray-300 group-hover:border-gray-400",
-                                )}
-                              >
-                                {selectedRoles.includes(role) && <Check className="w-3.5 h-3.5 text-white" />}
-                              </div>
-                              <span className={cn("text-sm font-bold", selectedRoles.includes(role) ? "text-primary-900" : "text-gray-600")}>
-                                {role === "ROLE_ADMIN" ? "Administrador" : role === "ROLE_MANAGER" ? "Gestor" : "Usuário Comum"}
-                              </span>
+                            <div
+                              className={cn(
+                                "w-4 h-4 rounded-full border flex items-center justify-center transition-all mb-3",
+                                selectedRoles.includes(role)
+                                  ? "bg-primary-600 border-primary-600 shadow-sm"
+                                  : "border-gray-300 bg-white group-hover:border-gray-400",
+                              )}
+                            >
+                              {selectedRoles.includes(role) && <Check className="w-2.5 h-2.5 text-white" />}
                             </div>
-                            {selectedRoles.includes(role) && (
-                              <div className="bg-primary-100/50 text-primary-700 font-black px-2 py-0.5 rounded-md text-[9px] uppercase tracking-tighter border border-primary-200/50">
-                                Selecionado
-                              </div>
-                            )}
+                            <span
+                              className={cn(
+                                "text-xs font-black uppercase tracking-tight",
+                                selectedRoles.includes(role) ? "text-primary-900" : "text-gray-500",
+                              )}
+                            >
+                              {role === "ROLE_ADMIN" ? "Admin" : role === "ROLE_MANAGER" ? "Gestor" : "Comum"}
+                            </span>
+                            <span className="text-[9px] font-bold text-gray-400 mt-0.5">
+                              {role === "ROLE_ADMIN" ? "Controle Total" : role === "ROLE_MANAGER" ? "Gestão" : "Acesso Limitado"}
+                            </span>
                           </div>
                         ))}
                       </div>
 
-                      <Button
-                        type="button"
-                        variant="default"
-                        className="w-full h-14 rounded-2xl font-black text-sm shadow-md bg-gray-900 hover:bg-black transition-all mt-2"
-                        disabled={
-                          isUpdatingRoles || isPending || JSON.stringify([...selectedRoles].sort()) === JSON.stringify([...user.roles].sort())
-                        }
-                        onClick={async () => {
-                          try {
-                            setIsUpdatingRoles(true);
-                            await updateUserRoles(user.id, selectedRoles);
-                            toast.success("Cargos atualizados com sucesso!");
-                            if (onUpdateRoles) onUpdateRoles(selectedRoles);
-                            // Sincronizar localmente se necessário ou deixar o refresh cuidar
-                          } catch (error) {
-                            console.error("Erro ao atualizar cargos:", error);
-                            toast.error("Erro ao atualizar cargos.");
-                          } finally {
-                            setIsUpdatingRoles(false);
+                      <div className="flex justify-end pt-2">
+                        <Button
+                          type="button"
+                          variant="default"
+                          className="h-11 px-6 rounded-xl font-black text-xs shadow-lg shadow-gray-200 bg-gray-900 hover:bg-black transition-all flex items-center gap-2"
+                          disabled={
+                            isUpdatingRoles || isPending || JSON.stringify([...selectedRoles].sort()) === JSON.stringify([...user.roles].sort())
                           }
-                        }}
-                      >
-                        {isUpdatingRoles ? <Spinner className="w-4 h-4 mr-2" /> : <Shield className="w-4 h-4 mr-2" />}
-                        Aplicar Novos Cargos
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-6 bg-gray-50/40 p-8 rounded-3xl border border-gray-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Activity className="w-5 h-5 text-gray-400" />
-                      <h4 className="text-[12px] font-black text-gray-500 uppercase tracking-widest">Auditoria Sistêmica</h4>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex flex-col p-5 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
-                        <span className="text-[11px] font-black text-gray-400 mb-1.5 uppercase tracking-widest">Data de Ingresso</span>
-                        <span className="text-base font-black text-gray-800">
-                          {user.audit.createdAt ? format(new Date(user.audit.createdAt), "dd/MM/yyyy HH:mm") : "-"}
-                        </span>
-                      </div>
-
-                      {user.audit.updatedAt && (
-                        <div className="flex flex-col p-5 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
-                          <span className="text-[11px] font-black text-gray-400 mb-1.5 uppercase tracking-widest">Última Modificação</span>
-                          <span className="text-base font-black text-amber-700">{format(new Date(user.audit.updatedAt), "dd/MM/yyyy HH:mm")}</span>
-                        </div>
-                      )}
-
-                      <div className="flex flex-col p-5 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all hover:border-gray-200 hover:shadow-md">
-                        <span className="text-[11px] font-black text-gray-400 mb-1.5 uppercase tracking-widest">Responsável Modificação</span>
-                        <span className="text-sm font-black text-primary-600 uppercase tracking-tighter truncate">
-                          {user.audit.updatedBy || "system"}
-                        </span>
+                          onClick={async () => {
+                            try {
+                              setIsUpdatingRoles(true);
+                              await updateUserRoles(user.id, selectedRoles);
+                              toast.success("Cargos atualizados!");
+                              if (onUpdateRoles) onUpdateRoles(selectedRoles);
+                            } catch (error) {
+                              console.error("Erro:", error);
+                              toast.error("Erro na atualização.");
+                            } finally {
+                              setIsUpdatingRoles(false);
+                            }
+                          }}
+                        >
+                          {isUpdatingRoles ? <Spinner className="w-3 h-3" /> : <Shield className="w-3 h-3" />}
+                          Salvar Cargos
+                        </Button>
                       </div>
                     </div>
                   </div>
