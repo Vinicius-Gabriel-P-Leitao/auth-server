@@ -84,7 +84,7 @@ class RefreshTokenUseCaseTest {
         assertNotNull(response);
         assertEquals("new-jwt", response.session().accessToken());
         assertEquals("new-refresh-token", result.refreshToken());
-        verify(userService).incrementTokenVersion(testUser);
+        verify(refreshTokenService).deleteByToken("old-refresh-token");
         verify(refreshTokenService).verifyExpiration(oldToken);
     }
 }

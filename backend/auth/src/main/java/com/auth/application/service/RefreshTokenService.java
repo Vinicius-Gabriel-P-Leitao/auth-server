@@ -30,10 +30,7 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(UserAuth user) {
-        // Remove token existente para não acumular lixo no banco e evitar erro 409
-        refreshTokenRepository.deleteByUser(user);
-        refreshTokenRepository.flush(); // Força a deleção antes da nova inserção
-
+        // NOTE: Permitimos múltiplos tokens por usuário para suportar várias sessões concurrently
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
                 .token(UUID.randomUUID().toString())
@@ -54,6 +51,11 @@ public class RefreshTokenService {
     public RefreshToken findByToken(String token) {
         return refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new BadRequestException(ErrorCode.UNAUTHORIZED, "Refresh token inválido ou não encontrado."));
+    }
+
+    @Transactional
+    public void deleteByToken(String token) {
+        refreshTokenRepository.deleteByToken(token);
     }
 
     @Transactional

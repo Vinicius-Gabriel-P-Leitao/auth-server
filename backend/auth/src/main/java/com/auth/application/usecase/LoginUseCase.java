@@ -50,8 +50,6 @@ public class LoginUseCase {
 
         log.info("Usuário {} autenticado com sucesso. Roles: {}", user.getEmail(), user.getRoles());
 
-        userService.incrementTokenVersion(user);
-
         String jwt = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
 

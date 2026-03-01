@@ -45,7 +45,7 @@ class RefreshTokenServiceTest {
 
         assertNotNull(created);
         assertNotNull(created.getToken());
-        verify(refreshTokenRepository).deleteByUser(user);
+        verify(refreshTokenRepository, never()).deleteByUser(user);
         verify(refreshTokenRepository).save(any());
     }
 

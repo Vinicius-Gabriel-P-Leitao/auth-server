@@ -94,7 +94,6 @@ class LoginUseCaseTest {
         assertEquals("test@example.com", response.user().email());
         assertTrue(response.user().roles().contains("ROLE_USER"));
         
-        verify(userService).incrementTokenVersion(testUser);
         verify(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     }
 

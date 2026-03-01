@@ -30,7 +30,7 @@ public class RefreshToken {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID tokenId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserAuth user;
 

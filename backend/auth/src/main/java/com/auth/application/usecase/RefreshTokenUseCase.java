@@ -33,12 +33,10 @@ public class RefreshTokenUseCase {
         refreshTokenService.verifyExpiration(token);
 
         UserAuth user = token.getUser();
-
-        // NOTE: Invalida o Access Token antigo
-        userService.incrementTokenVersion(user);
-
         String jwt = jwtService.generateToken(user);
-        // NOTE: Gera um novo refresh token e descarta o atual (Rotation)
+
+        // NOTE: Deleta o token de refresh ATUAL antes de gerar o novo (Rotação segura por sessão)
+        refreshTokenService.deleteByToken(request.refreshToken());
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
 
         UserSessionResponseDto session = UserSessionResponseDto.builder()

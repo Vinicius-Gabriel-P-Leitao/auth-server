@@ -13,6 +13,7 @@ import com.auth.api.dto.auth.UserResponseDto;
 import com.auth.api.dto.token.RefreshTokenRequestDto;
 import com.auth.application.dto.AuthenticationResult;
 import com.auth.application.service.CookieService;
+import com.auth.application.service.RefreshTokenService;
 import com.auth.application.usecase.LoginUseCase;
 import com.auth.application.usecase.RefreshTokenUseCase;
 import com.auth.application.usecase.ValidationUseCase;
@@ -40,6 +41,7 @@ public class AuthController {
     private final CookieService cookieService;
     private final ValidationUseCase validationUseCase;
     private final RefreshTokenUseCase refreshTokenUseCase;
+    private final RefreshTokenService refreshTokenService;
 
     // NOTE: Rota publica
     @PostMapping("/login")
@@ -66,10 +68,13 @@ public class AuthController {
 
     // NOTE: Não sei se precisa ser auth, por que ele mata o refresh token
     @PostMapping("/logout")
-    @Operation(summary = "Logout do usuário", description = "Invalida a sessão destruindo o cookie no navegador.")
-    public ResponseEntity<@NonNull Void> logout() {
-        ResponseCookie cookie = cookieService.buildLogoutCookie();
+    @Operation(summary = "Logout do usuário", description = "Invalida a sessão destruindo o cookie no navegador e removendo o token do banco.")
+    public ResponseEntity<@NonNull Void> logout(@CookieValue(value = "refresh_token", required = false) String refreshToken) {
+        if (refreshToken != null) {
+            refreshTokenService.deleteByToken(refreshToken);
+        }
 
+        ResponseCookie cookie = cookieService.buildLogoutCookie();
         return ResponseEntity.noContent().header(HttpHeaders.SET_COOKIE, cookie.toString()).build();
     }
 
