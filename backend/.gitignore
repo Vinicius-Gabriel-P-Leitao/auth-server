@@ -20,3 +20,5 @@ out/
 .classpath
 .project
 
+auth/src/main/resources/static/*
+!auth/src/main/resources/static/.gitkeep
