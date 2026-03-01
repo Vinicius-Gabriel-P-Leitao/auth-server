@@ -1,30 +1,30 @@
 # System Auth - Spring JWT
 
-Este projeto é um painel administrativo para controle de usuários e uma API de autenticação para aplicações externas.
+Este projeto é um painel administrativo para controle de usuários e uma API de autenticação robusta para aplicações externas, utilizando tokens JWT.
 
-## Principais Rotas
+## Principais Acessos
 
-- `/` : Acesso ao frontend (Painel Administrativo).
-- `/swagger-ui.html` : Documentação interativa da API (Swagger/OpenAPI).
+- `/` : Interface do Painel Administrativo (Frontend).
+- `/swagger-ui.html` : Documentação interativa e testes da API (Swagger/OpenAPI).
 
 ## Intuito do Projeto
 
-O objetivo principal é oferecer um **Painel Admin** centralizado para criação, ativação, desativação e manipulação de usuários. Além disso, o sistema expõe endpoints públicos para que outras aplicações possam se conectar e realizar a autenticação de seus usuários através de tokens JWT.
+O sistema centraliza a gestão de identidade, permitindo que administradores controlem o ciclo de vida dos usuários (criação, ativação, desativação). Ele expõe endpoints para que outras aplicações realizem autenticação de forma segura e padronizada.
 
 ### Funcionalidades:
 
-- Gestão de usuários (Admin).
-- Login e renovação de token (Público).
-- Reset de senha (Admin e Primeiro Acesso).
-- Documentação automática via Swagger.
+- **Gestão de Usuários**: Listagem paginada, ativação e desativação de contas.
+- **Segurança**: Autenticação via JWT com suporte a Refresh Token via Cookie HttpOnly.
+- **Controle de Senhas**: Troca voluntária, primeiro acesso e reset administrativo.
+- **Perfis**: Consulta e atualização de metadados de perfil.
 
-## Workflow de Integração
+## Fluxo de Autenticação e Registro
 
-Abaixo, o diagrama mostra como um administrador gerencia o sistema e como aplicações externas consomem os serviços de autenticação.
+Abaixo, o diagrama detalha como um administrador cria usuários e como o processo de login funciona para aplicações externas.
 
 ```mermaid
 sequenceDiagram
-    participant Admin as Administrador (Frontend)
+    participant Admin as Administrador (Painel)
     participant App as Aplicação Externa (Client)
     participant API as Auth API (Backend)
     participant DB as Banco de Dados
@@ -40,20 +40,60 @@ sequenceDiagram
     API->>DB: Valida credenciais e status
     DB-->>API: Usuário OK
     API-->>App: Retorna JWT Access Token + Cookie Refresh Token
+```
 
-    Note over App, DB: Consumo de Operações
-    App->>API: GET /v1/user/profile (Header: Authorization: Bearer JWT)
-    API-->>App: Detalhes do usuário
+## Gestão de Metadados e Operações Administrativas
+
+Este fluxo descreve como o sistema lida com a manutenção de dados e status dos usuários após o registro.
+
+```mermaid
+sequenceDiagram
+    participant Admin as Administrador (Painel)
+    participant API as Auth API (Backend)
+    participant DB as Banco de Dados
+
+    Note over Admin, DB: Operações de Metadados
+    Admin->>API: GET /v1/user (Lista paginada)
+    API->>DB: Consulta usuários
+    DB-->>API: Lista de dados
+    API-->>Admin: Retorna JSON paginado
+
+    Admin->>API: PATCH /v1/user/profile/{id} (Atualiza dados)
+    API->>DB: Update metadados
+    DB-->>API: Sucesso
+    API-->>Admin: Perfil atualizado
+
+    Admin->>API: POST /v1/password/admin-reset (Reset de senha)
+    API->>DB: Gera senha temporária
+    DB-->>API: Senha OK
+    API-->>Admin: Retorna senha provisória
 ```
 
 ## Como Conectar e Chamar Operações
 
-Para integrar sua aplicação com este serviço de autenticação, siga os passos abaixo:
+Para integrar sua aplicação com este serviço, utilize os endpoints conforme as categorias abaixo:
 
-1. **Login**: Envie as credenciais para `/v1/user/login`. Você receberá um `accessToken` no corpo da resposta e um `refresh_token` via cookie `HttpOnly`.
-2. **Autorização**: Utilize o `accessToken` no header de todas as requisições protegidas: `Authorization: Bearer <token>`.
-3. **Perfil**: Acesse `/v1/user/profile` para validar o token e obter dados do usuário logado.
-4. **Refresh**: Quando o token expirar, chame `/v1/user/refresh` enviando o cookie de refresh para obter um novo par de tokens.
+### 1. Autenticação e Sessão (`/v1/user`)
+
+- **Login**: `POST /login` - Retorna `accessToken` no corpo e define `refresh_token` no cookie.
+- **Refresh**: `POST /refresh` - Usa o cookie de refresh para renovar o acesso.
+- **Logout**: `POST /logout` - Invalida o cookie de sessão.
+- **Perfil**: `GET /profile` - Retorna os dados do usuário logado (Requer Bearer Token).
+
+### 2. Gestão de Usuários e Registro
+
+- **Registro**: `POST /v1/user/register` - Cria novo usuário (Apenas Admin).
+- **Registro Admin**: `POST /v1/user/register/admin` - Cria novo administrador.
+- **Listagem**: `GET /v1/user` - Lista usuários com paginação (Apenas Admin).
+- **Ativação**: `PATCH /v1/user/activate?id={uuid}` - Ativa conta.
+- **Desativação**: `PATCH /v1/user/deactivate?id={uuid}` - Suspende conta.
+- **Atualizar Perfil**: `PATCH /v1/user/profile/{id}` - Altera metadados do usuário.
+
+### 3. Gestão de Senhas (`/v1/password`)
+
+- **Troca de Senha**: `POST /change` - Altera a própria senha (Autenticado).
+- **Primeiro Acesso**: `POST /first-change` - Define senha após reset ou criação.
+- **Reset Admin**: `POST /admin-reset` - Gera nova senha para o usuário (Apenas Admin).
 
 ---
 
