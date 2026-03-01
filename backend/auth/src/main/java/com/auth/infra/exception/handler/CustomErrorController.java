@@ -26,10 +26,9 @@ import java.util.Date;
 public class CustomErrorController implements ErrorController {
 
     @RequestMapping("/error")
-    public ResponseEntity<DataObjectError> handleError(HttpServletRequest request) {
+    public ResponseEntity<?> handleError(HttpServletRequest request) {
+        String uri = (String) request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
-        Object message = request.getAttribute(RequestDispatcher.ERROR_MESSAGE);
-        Object uri = request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI);
 
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         if (status != null) {
@@ -38,21 +37,20 @@ public class CustomErrorController implements ErrorController {
             if (httpStatus == null) httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        String logMessage = message != null ? message.toString() : "Erro inesperado";
-        String displayMessage = "Ocorreu um erro ao processar sua solicitação";
-
-        if (httpStatus == HttpStatus.NOT_FOUND) {
-            displayMessage = "O recurso solicitado não foi encontrado";
-        } else if (httpStatus == HttpStatus.BAD_REQUEST) {
-            displayMessage = "A requisição enviada é inválida ou malformada";
+        // NOTE: Se NÃO for uma rota de API (Interface/Browser), redirecionamos para a raiz com parâmetros para que a SPA exiba a ErrorPage.
+        if (uri == null || !uri.startsWith("/v1/")) {
+            String redirectUrl = "/?error_code=" + httpStatus.value();
+            return ResponseEntity.status(HttpStatus.FOUND).header("Location", redirectUrl).build();
         }
 
-        DataObjectError error = DataObjectError.builder()
-                .message(displayMessage)
-                .code(httpStatus.value())
-                .timestamp(new Date())
-                .build();
+        // NOTE: Para rotas de API, retornamos JSON estruturado
+        String displayMessage = switch (httpStatus) {
+            case BAD_REQUEST -> "A requisição enviada é inválida ou malformada";
+            case NOT_FOUND -> "O recurso solicitado não foi encontrado";
+            default -> "Ocorreu um erro ao processar sua solicitação";
+        };
 
+        DataObjectError error = DataObjectError.builder().message(displayMessage).code(httpStatus.value()).timestamp(new Date()).build();
         return new ResponseEntity<>(error, httpStatus);
     }
 }
