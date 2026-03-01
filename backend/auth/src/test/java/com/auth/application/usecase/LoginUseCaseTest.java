@@ -81,16 +81,18 @@ class LoginUseCaseTest {
         
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken("fake-refresh-token");
-        when(refreshTokenService.createRefreshToken(testUser)).thenReturn(refreshToken);
+        refreshToken.setVersion(1);
+        when(refreshTokenService.createRefreshToken(any(), any(), any(), any(), any())).thenReturn(refreshToken);
 
         // Act
-        AuthenticationResult result = loginUseCase.execute(loginRequest);
+        AuthenticationResult result = loginUseCase.execute(loginRequest, "Mozilla", "127.0.0.1", "origin", "referer");
         AuthenticationResponseDto response = result.responseDto();
 
         // Assert
         assertNotNull(response);
         assertEquals("fake-jwt-token", response.session().accessToken());
         assertEquals("fake-refresh-token", result.refreshToken());
+        assertEquals(1, response.session().tokenVersion());
         assertEquals("test@example.com", response.user().email());
         assertTrue(response.user().roles().contains("ROLE_USER"));
         
@@ -105,7 +107,7 @@ class LoginUseCaseTest {
                 .thenThrow(new BadCredentialsException("Usuário ou senha inválidos"));
 
         // Act & Assert
-        assertThrows(BadCredentialsException.class, () -> loginUseCase.execute(loginRequest));
+        assertThrows(BadCredentialsException.class, () -> loginUseCase.execute(loginRequest, "Mozilla", "127.0.0.1", "origin", "referer"));
         verify(userService, never()).incrementTokenVersion(any());
     }
 }

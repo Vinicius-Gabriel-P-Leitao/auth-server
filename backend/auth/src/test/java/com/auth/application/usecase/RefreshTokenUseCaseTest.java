@@ -74,7 +74,8 @@ class RefreshTokenUseCaseTest {
         
         RefreshToken newToken = new RefreshToken();
         newToken.setToken("new-refresh-token");
-        when(refreshTokenService.createRefreshToken(testUser)).thenReturn(newToken);
+        newToken.setVersion(2);
+        when(refreshTokenService.createRefreshToken(any(), any(), any(), any(), any())).thenReturn(newToken);
 
         // Act
         AuthenticationResult result = refreshTokenUseCase.execute(request);
@@ -84,6 +85,7 @@ class RefreshTokenUseCaseTest {
         assertNotNull(response);
         assertEquals("new-jwt", response.session().accessToken());
         assertEquals("new-refresh-token", result.refreshToken());
+        assertEquals(2, response.session().tokenVersion());
         verify(refreshTokenService).deleteByToken("old-refresh-token");
         verify(refreshTokenService).verifyExpiration(oldToken);
     }

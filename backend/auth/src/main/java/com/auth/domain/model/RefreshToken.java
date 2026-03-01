@@ -37,6 +37,21 @@ public class RefreshToken {
     @Column(name = "token", nullable = false, unique = true)
     private String token;
 
+    @Column(name = "user_agent")
+    private String userAgent;
+
+    @Column(name = "ip_address")
+    private String ipAddress;
+
+    @Column(name = "origin")
+    private String origin;
+
+    @Column(name = "referer")
+    private String referer;
+
+    @Column(name = "version")
+    private Integer version = 0;
+
     @Column(name = "expires_at", nullable = false)
     private Instant expiryDate;
 }

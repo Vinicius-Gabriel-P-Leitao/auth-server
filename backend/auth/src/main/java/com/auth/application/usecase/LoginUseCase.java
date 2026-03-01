@@ -7,7 +7,6 @@
  */
 package com.auth.application.usecase;
 
-import com.auth.api.dto.auth.AuthenticationRequestDto;
 import com.auth.api.dto.auth.*;
 import com.auth.application.dto.AuthenticationResult;
 import com.auth.application.service.RefreshTokenService;
@@ -38,7 +37,7 @@ public class LoginUseCase {
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
 
-    public AuthenticationResult execute(AuthenticationRequestDto loginRequest) {
+    public AuthenticationResult execute(AuthenticationRequestDto loginRequest, String userAgent, String ipAddress, String origin, String referer) {
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password())
         );
@@ -51,11 +50,11 @@ public class LoginUseCase {
         log.info("Usuário {} autenticado com sucesso. Roles: {}", user.getEmail(), user.getRoles());
 
         String jwt = jwtService.generateToken(user);
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user, userAgent, ipAddress, origin, referer);
 
         UserSessionResponseDto session = UserSessionResponseDto.builder()
                 .accessToken(jwt)
-                .tokenVersion(user.getTokenVersion())
+                .tokenVersion(refreshToken.getVersion()) // Agora retorna a versão da SESSÃO (que incrementa no re-login)
                 .passwordResetRequired(user.isPasswordResetRequired())
                 .build();
 

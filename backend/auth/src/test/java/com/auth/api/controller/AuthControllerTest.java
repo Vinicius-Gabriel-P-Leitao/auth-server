@@ -72,7 +72,7 @@ class AuthControllerTest {
 
         AuthenticationResult result = new AuthenticationResult(responseDto, "fake-refresh");
 
-        when(loginUseCase.execute(any())).thenReturn(result);
+        when(loginUseCase.execute(any(), any(), any(), any(), any())).thenReturn(result);
 
         // Act & Assert
         mockMvc.perform(post("/v1/user/login")

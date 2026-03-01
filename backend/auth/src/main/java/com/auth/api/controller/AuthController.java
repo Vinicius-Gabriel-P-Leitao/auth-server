@@ -46,8 +46,15 @@ public class AuthController {
     // NOTE: Rota publica
     @PostMapping("/login")
     @Operation(summary = "Realiza o login do usuário", description = "Valida as credenciais, retorna JWT no JSON e envia Refresh Token num cookie HttpOnly.")
-    public ResponseEntity<@NonNull AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto loginRequest) {
-        AuthenticationResult result = loginUseCase.execute(loginRequest);
+    public ResponseEntity<@NonNull AuthenticationResponseDto> login(
+            @Valid @RequestBody AuthenticationRequestDto loginRequest,
+            @RequestHeader(value = HttpHeaders.ORIGIN, required = false) String origin,
+            @RequestHeader(value = HttpHeaders.REFERER, required = false) String referer,
+            @RequestHeader(value = HttpHeaders.USER_AGENT, required = false) String userAgent,
+            jakarta.servlet.http.HttpServletRequest request) {
+
+        String ipAddress = request.getRemoteAddr();
+        AuthenticationResult result = loginUseCase.execute(loginRequest, userAgent, ipAddress, origin, referer);
 
         ResponseCookie cookie = cookieService.buildRefreshTokenCookie(result.refreshToken());
 

@@ -29,13 +29,23 @@ public class RefreshTokenService {
     private long refreshTokenExpiration;
 
     @Transactional
-    public RefreshToken createRefreshToken(UserAuth user) {
-        // NOTE: Permitimos múltiplos tokens por usuário para suportar várias sessões concurrently
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
-                .build();
+    public RefreshToken createRefreshToken(UserAuth user, String userAgent, String ipAddress, String origin, String referer) {
+        // NOTE: Agora buscamos se já existe um token para esta mesma ORIGEM GRANULAR (UA + IP + Origin + Referer)
+        // Se existir, atualizamos o token, a expiração e INCREMENTAMOS a versão daquela sessão específica
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByUserAndUserAgentAndIpAddressAndOriginAndReferer(user, userAgent, ipAddress, origin, referer)
+                .orElseGet(() -> RefreshToken.builder()
+                        .user(user)
+                        .userAgent(userAgent)
+                        .ipAddress(ipAddress)
+                        .origin(origin)
+                        .referer(referer)
+                        .version(0)
+                        .build());
+
+        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenExpiration));
+        refreshToken.setVersion(refreshToken.getVersion() + 1);
 
         return refreshTokenRepository.save(refreshToken);
     }

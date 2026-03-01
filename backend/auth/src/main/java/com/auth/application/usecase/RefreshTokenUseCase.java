@@ -37,11 +37,12 @@ public class RefreshTokenUseCase {
 
         // NOTE: Deleta o token de refresh ATUAL antes de gerar o novo (Rotação segura por sessão)
         refreshTokenService.deleteByToken(request.refreshToken());
-        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user);
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user,
+                token.getUserAgent(), token.getIpAddress(), token.getOrigin(), token.getReferer());
 
         UserSessionResponseDto session = UserSessionResponseDto.builder()
                 .accessToken(jwt)
-                .tokenVersion(user.getTokenVersion())
+                .tokenVersion(newRefreshToken.getVersion())
                 .passwordResetRequired(user.isPasswordResetRequired())
                 .build();
 

@@ -35,18 +35,46 @@ class RefreshTokenServiceTest {
     private RefreshTokenService refreshTokenService;
 
     @Test
-    @DisplayName("Deve criar novo refresh token limpando os antigos")
+    @DisplayName("Deve criar novo refresh token sem limpar os antigos de outras origens")
     void shouldCreateToken() {
         UserAuth user = new UserAuth();
         user.setEmail("tester@example.com");
         when(refreshTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
 
-        RefreshToken created = refreshTokenService.createRefreshToken(user);
+        RefreshToken created = refreshTokenService.createRefreshToken(user, "Postman", "127.0.0.1", "https://app.itau.com.br", "https://app.itau.com.br/pix");
 
         assertNotNull(created);
-        assertNotNull(created.getToken());
+        assertEquals("Postman", created.getUserAgent());
+        assertEquals("127.0.0.1", created.getIpAddress());
+        assertEquals("https://app.itau.com.br", created.getOrigin());
+        assertEquals(1, created.getVersion());
         verify(refreshTokenRepository, never()).deleteByUser(user);
-        verify(refreshTokenRepository).save(any());
+    }
+
+    @Test
+    @DisplayName("Deve reaproveitar e incrementar versão se for da mesma origem granular")
+    void shouldReuseTokenForSameOrigin() {
+        UserAuth user = new UserAuth();
+        RefreshToken existing = RefreshToken.builder()
+                .user(user)
+                .userAgent("Postman")
+                .ipAddress("127.0.0.1")
+                .origin("https://app.itau.com.br")
+                .referer("https://app.itau.com.br/pix")
+                .version(1)
+                .token("old-token")
+                .build();
+
+        when(refreshTokenRepository.findByUserAndUserAgentAndIpAddressAndOriginAndReferer(
+                any(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(Optional.of(existing));
+        when(refreshTokenRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        RefreshToken updated = refreshTokenService.createRefreshToken(user, "Postman", "127.0.0.1", "https://app.itau.com.br", "https://app.itau.com.br/pix");
+
+        assertNotEquals("old-token", updated.getToken());
+        assertEquals(2, updated.getVersion());
+        verify(refreshTokenRepository).save(existing);
     }
 
     @Test
