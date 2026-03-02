@@ -86,7 +86,7 @@ class AuthE2ETest {
         adminData.setUser(admin);
         admin.setUserData(adminData);
         
-        userRepository.saveAndFlush(admin);
+        userRepository.save(admin);
 
         AuthenticationRequestDto adminLogin = new AuthenticationRequestDto("admin-boot@auth.com", "admin123");
         MvcResult adminLoginResult = mockMvc.perform(post("/v1/user/login")
@@ -187,7 +187,7 @@ class AuthE2ETest {
         adminData.setUser(admin);
         admin.setUserData(adminData);
         
-        userRepository.saveAndFlush(admin);
+        userRepository.save(admin);
 
         // Login do admin para pegar token
         AuthenticationRequestDto adminLogin = new AuthenticationRequestDto("admin-e2e@auth.com", "admin123");
@@ -258,7 +258,7 @@ class AuthE2ETest {
         adminData.setUserName("admin-mgmt");
         adminData.setUser(admin);
         admin.setUserData(adminData);
-        userRepository.saveAndFlush(admin);
+        userRepository.save(admin);
 
         String adminToken = objectMapper.readValue(
             mockMvc.perform(post("/v1/user/login")
@@ -277,7 +277,7 @@ class AuthE2ETest {
         userData.setUserName("to-manage");
         userData.setUser(user);
         user.setUserData(userData);
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         // 3. Listar usuários (Admin)
         mockMvc.perform(get("/v1/user")
@@ -332,7 +332,7 @@ class AuthE2ETest {
         userData.setRegistration("111111");
         userData.setUser(user);
         user.setUserData(userData);
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         // 2. Login para pegar token
         String token = objectMapper.readValue(
@@ -359,7 +359,7 @@ class AuthE2ETest {
             ad.setUserName("admin-mgmt");
             ad.setUser(a);
             a.setUserData(ad);
-            return userRepository.saveAndFlush(a);
+            return userRepository.save(a);
         });
 
         String adminToken = objectMapper.readValue(

@@ -35,7 +35,7 @@ class UserRepositoryTest {
         user.setEmail("db@example.com");
         user.setPassword("pass");
         user.setRoles(java.util.Set.of(Role.USER));
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         Optional<UserAuth> foundByEmail = userRepository.findByEmail("db@example.com");
 

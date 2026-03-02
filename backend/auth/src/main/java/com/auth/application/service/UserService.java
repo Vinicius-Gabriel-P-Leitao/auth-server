@@ -66,7 +66,7 @@ public class UserService {
     public void incrementTokenVersion(UserAuth user) {
         Integer currentVersion = user.getTokenVersion();
         user.setTokenVersion(currentVersion + 1);
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
     }
 
     /**

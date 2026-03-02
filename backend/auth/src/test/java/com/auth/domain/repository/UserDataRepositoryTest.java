@@ -42,7 +42,7 @@ class UserDataRepositoryTest {
         user.setEmail("profile@example.com");
         user.setPassword("password");
         user.setRoles(Set.of(Role.USER));
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         UserData data = new UserData();
         data.setUser(user);
@@ -50,7 +50,7 @@ class UserDataRepositoryTest {
         data.setRegistration("12345");
         data.setPosition("Developer");
         data.setWorkRegime(WorkRegime.HOME_WORK);
-        userDataRepository.saveAndFlush(data);
+        userDataRepository.save(data);
 
         // Act
         Optional<UserData> found = userDataRepository.findById(user.getUserId());
@@ -71,16 +71,16 @@ class UserDataRepositoryTest {
         user.setEmail("update@example.com");
         user.setPassword("password");
         user.setRoles(Set.of(Role.USER));
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         UserData data = new UserData();
         data.setUser(user);
         data.setUserName("Old Name");
-        userDataRepository.saveAndFlush(data);
+        userDataRepository.save(data);
 
         // Act
         data.setUserName("New Name");
-        userDataRepository.saveAndFlush(data);
+        userDataRepository.save(data);
 
         // Assert
         UserData updated = userDataRepository.findById(user.getUserId()).orElseThrow();

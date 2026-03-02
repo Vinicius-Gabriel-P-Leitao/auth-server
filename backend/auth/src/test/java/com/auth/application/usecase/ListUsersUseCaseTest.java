@@ -12,8 +12,8 @@ import com.auth.api.dto.common.PaginatedResponseDto;
 import com.auth.domain.model.Role;
 import com.auth.domain.model.UserAuth;
 import com.auth.domain.model.UserData;
-import com.auth.domain.repository.UserAuthRepository;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 class ListUsersUseCaseTest {
 
     @Mock
-    private UserAuthRepository userRepository;
+    private MongoTemplate mongoTemplate;
 
     @InjectMocks
     private ListUsersUseCase listUsersUseCase;
@@ -64,8 +64,8 @@ class ListUsersUseCaseTest {
     @DisplayName("Deve retornar uma lista paginada de usuários com sucesso")
     void deveRetornarListaPaginadaComSucesso() {
         // Arrange
-        Page<UserAuth> page = new PageImpl<>(List.of(testUser));
-        when(userRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(mongoTemplate.count(any(Query.class), any(Class.class))).thenReturn(1L);
+        when(mongoTemplate.find(any(Query.class), any(Class.class))).thenReturn(List.of(testUser));
 
         // Act
         PaginatedResponseDto<UserResponseDto> result = listUsersUseCase.execute(0, 10, "/v1/user", null, null, null);
@@ -81,8 +81,8 @@ class ListUsersUseCaseTest {
     @DisplayName("Deve incluir metadados de paginação e links na resposta")
     void deveIncluirMetadadosELinks() {
         // Arrange
-        Page<UserAuth> page = new PageImpl<>(List.of(testUser), PageRequest.of(0, 10), 1);
-        when(userRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
+        when(mongoTemplate.count(any(Query.class), any(Class.class))).thenReturn(1L);
+        when(mongoTemplate.find(any(Query.class), any(Class.class))).thenReturn(List.of(testUser));
 
         // Act
         PaginatedResponseDto<UserResponseDto> result = listUsersUseCase.execute(0, 10, "/v1/user", null, null, null);

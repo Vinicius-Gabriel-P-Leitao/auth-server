@@ -40,14 +40,14 @@ class RefreshTokenRepositoryTest {
         user.setEmail("owner@example.com");
         user.setPassword("pass");
         user.setRoles(java.util.Set.of(Role.USER));
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         RefreshToken token = RefreshToken.builder()
                 .token("my-unique-token")
                 .user(user)
                 .expiryDate(Instant.now().plusSeconds(3600))
                 .build();
-        refreshTokenRepository.saveAndFlush(token);
+        refreshTokenRepository.save(token);
 
         Optional<RefreshToken> found = refreshTokenRepository.findByToken("my-unique-token");
 
@@ -62,17 +62,17 @@ class RefreshTokenRepositoryTest {
         user.setEmail("deleted@example.com");
         user.setPassword("pass");
         user.setRoles(java.util.Set.of(Role.USER));
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         RefreshToken token = RefreshToken.builder()
                 .token("delete-me")
                 .user(user)
                 .expiryDate(Instant.now().plusSeconds(3600))
                 .build();
-        refreshTokenRepository.saveAndFlush(token);
+        refreshTokenRepository.save(token);
 
         refreshTokenRepository.deleteByUser(user);
-        refreshTokenRepository.flush();
+        // removed flush
 
         Optional<RefreshToken> found = refreshTokenRepository.findByToken("delete-me");
         assertTrue(found.isEmpty());
