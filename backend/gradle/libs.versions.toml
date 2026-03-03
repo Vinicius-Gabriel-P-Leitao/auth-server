@@ -5,7 +5,6 @@ jjwt = "0.12.6"
 lombok = "1.18.42"
 springdoc = "2.8.5"
 bucket4j = "8.10.1"
-testcontainers = "1.20.4"
 
 [libraries]
 # Spring Boot Starters
@@ -31,8 +30,6 @@ springdoc-openapi = { group = "org.springdoc", name = "springdoc-openapi-starter
 spring-boot-starter-test = { group = "org.springframework.boot", name = "spring-boot-starter-test" }
 spring-boot-test-autoconfigure = { group = "org.springframework.boot", name = "spring-boot-test-autoconfigure" }
 spring-boot-starter-security-test = { group = "org.springframework.boot", name = "spring-boot-starter-security-test" }
-testcontainers-mongodb = { group = "org.testcontainers", name = "mongodb", version.ref = "testcontainers" }
-testcontainers-junit-jupiter = { group = "org.testcontainers", name = "junit-jupiter", version.ref = "testcontainers" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
