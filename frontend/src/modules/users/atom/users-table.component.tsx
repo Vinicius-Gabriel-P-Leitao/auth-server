@@ -1,6 +1,6 @@
 import { Button } from "@components/sh-button/button.component";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@components/sh-dialog/dialog.component";
-import { Input } from "@components/sh-input/input.component";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@components/sh-input-group/input-group.component";
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@components/sh-pagination/pagination.component";
 import { Spinner } from "@components/sh-spinner/spinner.component";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@components/sh-table/table.component";
@@ -148,19 +148,22 @@ export function UsersTableComponent() {
       <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4 flex-1">
           <h2 className="font-semibold text-gray-900 whitespace-nowrap hidden lg:block">Usuários Cadastrados</h2>
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
-
-            <Input
+          <InputGroup className="w-full max-w-md h-10">
+            <InputGroupAddon>
+              <InputGroupText>
+                <Search className="w-4 h-4" />
+              </InputGroupText>
+            </InputGroupAddon>
+            <InputGroupInput
               placeholder="Buscar por nome, e-mail ou cargo..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
                 setPage(0); // Reset page when searching
               }}
-              className="pl-10 h-10 bg-gray-50/50 border-gray-100 focus:bg-white transition-all rounded-xl"
+              className="h-10 bg-gray-50/50 border-gray-100 focus:bg-white transition-all rounded-xl"
             />
-          </div>
+          </InputGroup>
         </div>
         <div className="flex items-center gap-3 justify-end">
           {isRefetching && <Spinner className="w-4 h-4 text-gray-400" />}

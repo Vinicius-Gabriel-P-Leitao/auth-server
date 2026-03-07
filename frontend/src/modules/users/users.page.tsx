@@ -4,6 +4,7 @@ import { logoutAttempt } from "@modules/auth/services/auth.service";
 import { Button } from "@components/sh-button/button.component";
 import { CreateUserDialog } from "./atom/user-form.component";
 import { UsersTableComponent } from "./atom/users-table.component";
+import { ChangePasswordDialog } from "./atom/change-password-dialog.component";
 
 export function UsersPage() {
   const { user } = useAuthStore();
@@ -34,6 +35,8 @@ export function UsersPage() {
               <Shield className="w-3 h-3 text-emerald-500" /> Administrador
             </p>
           </div>
+
+          <ChangePasswordDialog />
 
           <Button
             variant="outline"

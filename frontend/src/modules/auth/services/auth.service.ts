@@ -23,6 +23,10 @@ export async function firstChangePasswordAttempt(password: string): Promise<void
   useAuthStore.getState().clearAuth();
 }
 
+export async function changePasswordAttempt(payload: { oldPassword: string; newPassword: string }): Promise<void> {
+  await axiosClient.post("/v1/password/change", payload);
+}
+
 export async function getProfile(): Promise<UserResponseDto> {
   const { data } = await axiosClient.get<UserResponseDto>("/v1/user/profile");
   return data;
