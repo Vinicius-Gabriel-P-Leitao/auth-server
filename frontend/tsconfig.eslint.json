@@ -12,6 +12,7 @@
     "fixtures/**/*.ts",
     "fixtures/**/*.tsx",
     "vite.config.ts",
+    "vitest.config.ts",
     "eslint.config.ts",
     "vitest.shims.d.ts",
     ".storybook/**/*.ts",
