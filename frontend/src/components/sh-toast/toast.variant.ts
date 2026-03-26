@@ -12,7 +12,7 @@ export const toastVariants = cva(
       variant: {
         info: "text-primary",
         warning: "text-secondary",
-        error: "text-danger",
+        error: "text-destructive",
         success: "text-success",
       },
     },

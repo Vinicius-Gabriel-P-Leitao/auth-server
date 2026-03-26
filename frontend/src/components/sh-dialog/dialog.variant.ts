@@ -1,7 +1,7 @@
 import { cva } from "class-variance-authority";
 
 export const dialogContentVariants = cva(
-  "bg-white/95 backdrop-blur-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-6 rounded-[2.5rem] border border-slate-200 p-8 shadow-2xl duration-300 outline-none ring-1 ring-slate-900/5",
+  "bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-top-[48%] fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-6 rounded-[2.5rem] p-8 shadow-2xl duration-300 outline-none ring-1 ring-slate-900/5 tactile-border",
   {
     variants: {
       size: {

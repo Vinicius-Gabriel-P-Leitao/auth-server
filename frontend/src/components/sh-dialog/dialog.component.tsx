@@ -1,11 +1,47 @@
-import { XIcon } from "lucide-react";
-import { Dialog as DialogPrimitive } from "radix-ui";
-import * as React from "react";
 import { Button } from "@components/sh-button/button.component";
 import { cn } from "@lib/cn/cn.util";
-import { dialogContentVariants } from "./dialog.variant";
+import { XIcon } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { type DialogContentVariantsProps } from "./dialog.prop";
+import { dialogContentVariants } from "./dialog.variant";
 
+/**
+ * Modal de diálogo baseado em Radix UI. Suporta 9 tamanhos via prop `size` no `DialogContent` e exibe botão de fechar por padrão.
+ * Sempre inclua `DialogTitle` para acessibilidade (leitores de tela anunciam o título ao abrir).
+ *
+ * @example
+ * // Dialog básico com cabeçalho e rodapé
+ * <Dialog>
+ *   <DialogTrigger asChild>
+ *     <Button>Abrir</Button>
+ *   </DialogTrigger>
+ *   <DialogContent>
+ *     <DialogHeader>
+ *       <DialogTitle>Título</DialogTitle>
+ *       <DialogDescription>Descrição do dialog.</DialogDescription>
+ *     </DialogHeader>
+ *     <DialogFooter>
+ *       <Button type="submit">Salvar</Button>
+ *     </DialogFooter>
+ *   </DialogContent>
+ * </Dialog>
+ *
+ * @example
+ * // Dialog sem botão de fechar, tamanho lg
+ * <Dialog>
+ *   <DialogTrigger asChild>
+ *     <Button>Abrir detalhes</Button>
+ *   </DialogTrigger>
+ *   <DialogContent size="lg" showCloseButton={false}>
+ *     <DialogHeader>
+ *       <DialogTitle>Detalhes</DialogTitle>
+ *     </DialogHeader>
+ *     <DialogFooter showCloseButton>
+ *       <Button>Confirmar</Button>
+ *     </DialogFooter>
+ *   </DialogContent>
+ * </Dialog>
+ */
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
@@ -35,6 +71,10 @@ function DialogOverlay({ className, ...props }: React.ComponentProps<typeof Dial
   );
 }
 
+/**
+ * @param size - Largura máxima do dialog: `default` (lg), `sm`, `lg`, `xl`, `2xl`, `3xl`, `4xl`, `5xl`, `6xl`, `full`.
+ * @param showCloseButton - Exibe o botão × no canto superior direito (padrão: `true`).
+ */
 function DialogContent({
   className,
   children,
@@ -68,6 +108,9 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return <div data-slot="dialog-header" className={cn("flex flex-col gap-3 text-center sm:text-left", className)} {...props} />;
 }
 
+/**
+ * @param showCloseButton - Adiciona um botão "Fechar" no rodapé que fecha o dialog (padrão: `false`).
+ */
 function DialogFooter({
   className,
   showCloseButton = false,
@@ -105,4 +148,3 @@ function DialogDescription({ className, ...props }: React.ComponentProps<typeof 
 }
 
 export { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger };
-

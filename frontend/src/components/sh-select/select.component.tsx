@@ -3,8 +3,45 @@ import { type SelectTriggerProps } from "./select.prop";
 import { cn } from "@lib/cn/cn.util";
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { Select as SelectPrimitive } from "radix-ui";
-import * as React from "react";
 
+/**
+ * Campo de seleção baseado em Radix UI. Suporta variantes `default` e `glass` no `SelectTrigger`, dois tamanhos e grupos de opções via `SelectGroup`.
+ * Use `onValueChange` para capturar a seleção. Sempre defina um `placeholder` para indicar o estado vazio.
+ *
+ * @param value - Valor controlado atualmente selecionado.
+ * @param defaultValue - Valor inicial não controlado.
+ * @param onValueChange - Callback chamado quando o usuário seleciona um item.
+ * @param disabled - Desabilita todo o campo de seleção quando `true`.
+ * @param open - Controla o estado aberto/fechado externamente.
+ * @param onOpenChange - Callback chamado quando o popover abre ou fecha.
+ *
+ * @example
+ * // Seleção simples com placeholder
+ * <Select onValueChange={(v) => console.log(v)}>
+ *   <SelectTrigger className="w-[220px]">
+ *     <SelectValue placeholder="Selecione o tipo" />
+ *   </SelectTrigger>
+ *   <SelectContent>
+ *     <SelectItem value="aposentadoria">Aposentadoria</SelectItem>
+ *     <SelectItem value="pensao">Pensão por morte</SelectItem>
+ *   </SelectContent>
+ * </Select>
+ *
+ * @example
+ * // Seleção controlada com grupos
+ * <Select value={tipo} onValueChange={setTipo}>
+ *   <SelectTrigger className="w-[240px]">
+ *     <SelectValue placeholder="Selecione a categoria" />
+ *   </SelectTrigger>
+ *   <SelectContent>
+ *     <SelectGroup>
+ *       <SelectLabel>Aposentadoria</SelectLabel>
+ *       <SelectItem value="tempo">Por tempo de contribuição</SelectItem>
+ *       <SelectItem value="idade">Por idade</SelectItem>
+ *     </SelectGroup>
+ *   </SelectContent>
+ * </Select>
+ */
 function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
@@ -17,6 +54,14 @@ function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.V
   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
 }
 
+/**
+ * Botão que abre o popover de seleção. Aceita variantes visuais e tamanhos via CVA.
+ *
+ * @param variant - Variante visual: `"default"` (padrão) ou `"glass"` (para fundos escuros/translúcidos).
+ * @param size - Tamanho do trigger: `"default"` (h-12) ou `"sm"` (h-8, bordas menores).
+ * @param className - Classes CSS adicionais.
+ * @param children - Conteúdo interno, geralmente `<SelectValue>`.
+ */
 function SelectTrigger({ className, variant, size, children, ...props }: SelectTriggerProps) {
   return (
     <SelectPrimitive.Trigger data-slot="select-trigger" className={cn(selectTriggerVariants({ variant, size }), className)} {...props}>
@@ -132,4 +177,3 @@ export {
   SelectTrigger,
   SelectValue,
 };
-

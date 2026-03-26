@@ -1,10 +1,47 @@
-import * as React from "react";
-
 import { cn } from "@lib/cn/cn.util";
 
+/**
+ * Tabela semântica HTML com scroll horizontal automático. Composta por `TableHeader`, `TableBody`, `TableFooter`, `TableRow`, `TableHead`, `TableCell` e `TableCaption`.
+ * Use `data-state="selected"` em `TableRow` para destacar linhas selecionadas.
+ *
+ * @param className - Classes CSS adicionais aplicadas ao elemento `<table>`.
+ * @param props - Demais props nativas do elemento `<table>`.
+ *
+ * @example
+ * // Tabela simples com cabeçalho e corpo
+ * <Table>
+ *   <TableHeader>
+ *     <TableRow>
+ *       <TableHead>Nome</TableHead>
+ *       <TableHead>Cargo</TableHead>
+ *     </TableRow>
+ *   </TableHeader>
+ *   <TableBody>
+ *     <TableRow>
+ *       <TableCell>João</TableCell>
+ *       <TableCell>Analista</TableCell>
+ *     </TableRow>
+ *   </TableBody>
+ * </Table>
+ *
+ * @example
+ * // Tabela com rodapé e linha selecionada
+ * <Table>
+ *   <TableBody>
+ *     <TableRow data-state="selected">
+ *       <TableCell>001/2024</TableCell>
+ *     </TableRow>
+ *   </TableBody>
+ *   <TableFooter>
+ *     <TableRow>
+ *       <TableCell>Total: 1</TableCell>
+ *     </TableRow>
+ *   </TableFooter>
+ * </Table>
+ */
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
-    <div data-slot="table-container" className="relative w-full overflow-x-auto">
+    <div data-slot="table-container" className="relative w-full overflow-x-auto rounded-xl tactile-border">
       <table data-slot="table" className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   );
@@ -33,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]",
+        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-0.5",
         className,
       )}
       {...props}
@@ -45,7 +82,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
-      className={cn("p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]", className)}
+      className={cn("p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-0.5", className)}
       {...props}
     />
   );
@@ -56,4 +93,3 @@ function TableCaption({ className, ...props }: React.ComponentProps<"caption">) 
 }
 
 export { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow };
-

@@ -2,9 +2,9 @@ import type { AxiosError } from 'axios';
 import axios from 'axios'
 
 export type DataObjectError = {
+    code: number
     message: string
     timestamp: string
-    code: number
     details?: Record<string, string>
 }
 

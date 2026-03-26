@@ -3,7 +3,7 @@ import type { InternalAxiosRequestConfig, AxiosError } from "axios";
 import { useAuthStore } from "@store/auth.store";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@lib/api-error/api-error.util";
-import type { DataObjectError, UserResponseDto, UserSessionResponseDto } from "@modules/auth/molecule/auth.types";
+import type { DataObjectError, UserResponseDto, UserSessionResponseDto } from "@features/auth/molecule/auth.types";
 
 export const axiosClient = axios.create({
   baseURL: "",
@@ -104,10 +104,6 @@ axiosClient.interceptors.response.use(
     }
 
     if (status && status >= 400 && status !== 401 && status !== 403) {
-      // Se a chamada falhou com 400+ (ex: 404, 500) e queremos fallback global na SPA.
-      // toast.error já é acionado em muitos lugares, mas se a rota não existe (404) ou se
-      // a API inteira caiu (500), podemos redirecionar para a tela de erro usando o window/router
-      // se tivermos acesso a ele.
       if (status >= 500 || status === 404) {
         const searchParams = new URLSearchParams();
         searchParams.set("error_code", status.toString());
