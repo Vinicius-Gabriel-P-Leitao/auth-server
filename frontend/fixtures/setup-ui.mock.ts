@@ -57,6 +57,24 @@ window.IntersectionObserver = vi.fn().mockImplementation(() => ({
 // Mock scrollTo
 window.scrollTo = vi.fn();
 
+document.addEventListener(
+  "click",
+  (event) => {
+    const target = event.target as HTMLElement;
+    const isSubmitButton =
+      (target instanceof HTMLButtonElement && target.type === "submit") ||
+      (target instanceof HTMLInputElement && target.type === "submit");
+
+    if (isSubmitButton && !event.defaultPrevented) {
+      const form = (target as HTMLButtonElement | HTMLInputElement).form;
+      if (form) {
+        form.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+      }
+    }
+  },
+  true,
+);
+
 // Radix UI Select/Popover require pointer capture methods and scrollIntoView
 if (typeof window !== "undefined") {
   if (!Element.prototype.setPointerCapture) {
