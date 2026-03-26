@@ -10,7 +10,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    setupFiles: ["./fixtures/setup-ui.ts"],
+    setupFiles: ["./fixtures/setup-ui.mock.ts"],
     projects: [
       {
         extends: true,
@@ -18,7 +18,7 @@ export default defineConfig({
           name: "unit",
           environment: "jsdom",
           globals: true,
-          setupFiles: ["./fixtures/setup-ui.ts"],
+          setupFiles: ["./fixtures/setup-ui.mock.ts"],
           include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
         },
       },
@@ -27,14 +27,14 @@ export default defineConfig({
         plugins: [
           storybookTest({
             configDir: path.join(dirname, ".storybook"),
-          }) as any,
+          }),
         ],
         test: {
           name: "storybook",
           browser: {
             enabled: true,
             headless: true,
-            provider: playwright({}) as any,
+            provider: playwright({}),
             instances: [
               {
                 browser: "chromium",

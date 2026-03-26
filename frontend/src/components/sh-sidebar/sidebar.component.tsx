@@ -1,52 +1,36 @@
-import { useIsMobile } from "@lib/hooks/use-mobile";
-import { Button } from "@components/sh-button/button.component";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@components/sh-drawer/drawer.component";
-import { Input } from "@components/sh-input/input.component";
-import { Separator } from "@components/sh-separator/separator.component";
-import { Skeleton } from "@components/sh-skeleton/skeleton.component";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/sh-tooltip/tooltip.component";
 import { cn } from "@lib/cn/cn.util";
 import { type VariantProps } from "class-variance-authority";
 import { PanelLeftIcon } from "lucide-react";
 import { Slot } from "radix-ui";
 import * as React from "react";
+import { SidebarContext, useSidebar, type SidebarContextProps } from "./sidebar.hook";
 import { sidebarMenuButtonVariants } from "./sidebar.variant";
+import { useIsMobile } from "@lib/hooks/use-mobile";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/sh-tooltip/tooltip.component";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@components/sh-drawer/drawer.component";
+import { Button } from "@components/sh-button/button.component";
+import { Input } from "@components/sh-input/input.component";
+import { Separator } from "@components/sh-separator/separator.component";
+import { Skeleton } from "@components/sh-skeleton/skeleton.component";
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SIDEBAR_WIDTH = "16rem";
+const SIDEBAR_COOKIE_NAME = "sidebar_state";
+const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "4.5rem";
-const SIDEBAR_KEYBOARD_SHORTCUT = "b";
+const SIDEBAR_WIDTH = "16rem";
 
-type SidebarContextProps = {
-  state: "expanded" | "collapsed";
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  openMobile: boolean;
-  setOpenMobile: (open: boolean) => void;
-  isMobile: boolean;
-  toggleSidebar: () => void;
-};
-
-const SidebarContext = React.createContext<SidebarContextProps | null>(null);
-
-function useSidebar() {
-  const context = React.useContext(SidebarContext);
-  if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider.");
-  }
-
-  return context;
+function randomWidth() {
+  return `${Math.floor(Math.random() * 40) + 50}%`;
 }
 
 function SidebarProvider({
+  onOpenChange: setOpenProp,
   defaultOpen = true,
   open: openProp,
-  onOpenChange: setOpenProp,
   className,
-  style,
   children,
+  style,
   ...props
 }: React.ComponentProps<"div"> & {
   defaultOpen?: boolean;
@@ -132,6 +116,40 @@ function SidebarProvider({
   );
 }
 
+/**
+ * Barra lateral de navegação composta. Suporta variantes `sidebar`, `floating` e `inset`, e é colapsável em dispositivos móveis via `SidebarProvider`.
+ * Sempre forneça `aria-label` no `SidebarTrigger` para acessibilidade do botão de abertura/fechamento.
+ *
+ * @param side - Lado em que a barra lateral é exibida. `"left"` (padrão) ou `"right"`.
+ * @param variant - Estilo visual da barra lateral: `"sidebar"` (padrão), `"floating"` ou `"inset"`.
+ * @param collapsible - Comportamento de colapso: `"offcanvas"` (padrão, desliza para fora), `"icon"` (reduz para ícones) ou `"none"` (sem colapso).
+ *
+ * @example
+ * // Sidebar padrão com trigger de alternância
+ * <SidebarProvider>
+ *   <Sidebar>
+ *     <SidebarHeader>Menu</SidebarHeader>
+ *     <SidebarContent>
+ *       <SidebarMenu>
+ *         <SidebarMenuItem>
+ *           <SidebarMenuButton>Início</SidebarMenuButton>
+ *         </SidebarMenuItem>
+ *       </SidebarMenu>
+ *     </SidebarContent>
+ *   </Sidebar>
+ *   <SidebarInset>
+ *     <SidebarTrigger aria-label="Alternar menu lateral" />
+ *   </SidebarInset>
+ * </SidebarProvider>
+ *
+ * @example
+ * // Sidebar flutuante no lado direito
+ * <SidebarProvider>
+ *   <Sidebar side="right" variant="floating">
+ *     <SidebarContent>Conteúdo</SidebarContent>
+ *   </Sidebar>
+ * </SidebarProvider>
+ */
 function Sidebar({
   side = "left",
   variant = "sidebar",
@@ -158,15 +176,11 @@ function Sidebar({
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetContent
-          data-sidebar="sidebar"
-          data-slot="sidebar"
           data-mobile="true"
+          data-slot="sidebar"
+          data-sidebar="sidebar"
+          style={{ "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties}
           className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-          style={
-            {
-              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-            } as React.CSSProperties
-          }
           side={side}
         >
           <SheetHeader className="sr-only">
@@ -210,7 +224,7 @@ function Sidebar({
 
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l border-border/40 shadow-[1px_0_0_0_rgba(255,255,255,0.05)_inset]",
           className,
         )}
         {...props}
@@ -261,7 +275,7 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex",
+        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 hover:after:bg-sidebar-border sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
         "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
         "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar",
@@ -469,9 +483,7 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) {
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  }, []);
+  const [width] = React.useState(randomWidth);
 
   return (
     <div
@@ -569,6 +581,4 @@ export {
   SidebarRail,
   SidebarSeparator,
   SidebarTrigger,
-  useSidebar,
 };
-

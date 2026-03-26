@@ -11,8 +11,8 @@ import { CheckCircle2, Copy, Loader2, ShieldPlus, UserPlus } from "lucide-react"
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { registerAdminSchema, registerUserSchema } from "src/features/users/molecule/user.schema";
-import { registerAdminAttempt, registerUserAttempt } from "src/features/users/services/user.service";
+import { registerAdminSchema, registerUserSchema } from "@features/users/molecule/user.schema";
+import { registerAdminAttempt, registerUserAttempt } from "@features/users/services/user.service";
 
 type Props = {
   role: "ADMIN" | "USER";
@@ -197,11 +197,7 @@ export function CreateUserDialog({ role }: Props) {
                 <Button type="button" variant="ghost" onClick={() => handleOpenChange(false)}>
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={registerMutation.isPending}
-                  className={isAdmin ? "bg-indigo-600 hover:bg-indigo-700" : ""}
-                >
+                <Button type="submit" disabled={registerMutation.isPending} className={isAdmin ? "bg-indigo-600 hover:bg-indigo-700" : ""}>
                   {registerMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Salvar {isAdmin ? "Administrador" : "Usuário"}
                 </Button>

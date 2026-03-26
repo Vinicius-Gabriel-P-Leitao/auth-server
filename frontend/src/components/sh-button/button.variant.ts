@@ -5,16 +5,20 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-white hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all duration-200",
-        success: "bg-success text-white hover:bg-success/90 shadow-lg shadow-success/20 active:scale-[0.98] transition-all duration-200",
+        default:
+          "bg-primary text-primary-foreground shadow-[0_1px_0_0_rgba(255,255,255,0.2)_inset,0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 border border-primary/20",
+        success:
+          "bg-success text-success-foreground shadow-[0_1px_0_0_rgba(255,255,255,0.2)_inset,0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] hover:bg-success/90 active:scale-[0.98] transition-all duration-200 border border-success/20",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 shadow-lg shadow-destructive/20 active:scale-[0.98] transition-all duration-200",
-        outline: "border bg-background shadow-sm hover:bg-accent hover:text-accent-foreground active:scale-[0.98] transition-all duration-200",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-md active:scale-[0.98] transition-all duration-200",
+          "bg-destructive text-destructive-foreground shadow-[0_1px_0_0_rgba(255,255,255,0.2)_inset,0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-2px_rgba(0,0,0,0.1)] hover:bg-destructive/90 active:scale-[0.98] transition-all duration-200 border border-destructive/20",
+        outline:
+          "border border-input bg-background shadow-[0_1px_2px_0_rgba(0,0,0,0.05)] hover:bg-accent hover:text-accent-foreground active:scale-[0.98] transition-all duration-200 hover:border-accent-foreground/20",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-[0_1px_0_0_rgba(255,255,255,0.1)_inset,0_1px_2px_0_rgba(0,0,0,0.05)] hover:bg-secondary/80 active:scale-[0.98] transition-all duration-200 border border-secondary/20",
         ghost: "hover:bg-accent hover:text-accent-foreground active:scale-[0.98] transition-all duration-200",
         link: "text-primary underline-offset-4 hover:underline",
         input:
-          "bg-white border-slate-200 text-slate-700 hover:border-primary/50 hover:bg-primary/5 hover:text-primary transition-[color,border-color,background-color] shadow-sm",
+          "bg-background border border-input text-foreground hover:border-primary/50 hover:bg-accent hover:text-accent-foreground transition-[color,border-color,background-color] shadow-sm",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

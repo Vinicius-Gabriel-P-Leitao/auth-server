@@ -1,9 +1,30 @@
-import * as React from "react";
 import { XIcon } from "lucide-react";
 import { Dialog as SheetPrimitive } from "radix-ui";
 
 import { cn } from "@lib/cn/cn.util";
 
+/**
+ * Painel deslizante lateral (Sheet/Drawer) baseado em Radix UI Dialog. Suporta 4 posições via `side` no `SheetContent`: `right` (padrão), `left`, `top`, `bottom`.
+ * Sempre inclua `SheetTitle` para acessibilidade (leitores de tela anunciam o título ao abrir).
+ *
+ * @example
+ * // Drawer padrão (direita)
+ * <Sheet>
+ *   <SheetTrigger asChild><Button>Abrir</Button></SheetTrigger>
+ *   <SheetContent>
+ *     <SheetHeader><SheetTitle>Detalhes</SheetTitle></SheetHeader>
+ *   </SheetContent>
+ * </Sheet>
+ *
+ * @example
+ * // Drawer inferior sem botão de fechar
+ * <Sheet>
+ *   <SheetTrigger asChild><Button>Ações</Button></SheetTrigger>
+ *   <SheetContent side="bottom" showCloseButton={false}>
+ *     <SheetHeader><SheetTitle>Opções</SheetTitle></SheetHeader>
+ *   </SheetContent>
+ * </Sheet>
+ */
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
@@ -33,6 +54,10 @@ function SheetOverlay({ className, ...props }: React.ComponentProps<typeof Sheet
   );
 }
 
+/**
+ * @param side - Posição de abertura do painel: `"right"` (padrão), `"left"`, `"top"` ou `"bottom"`.
+ * @param showCloseButton - Exibe o botão de fechar (X) no canto superior direito. Padrão: `true`.
+ */
 function SheetContent({
   className,
   children,
@@ -89,4 +114,3 @@ function SheetDescription({ className, ...props }: React.ComponentProps<typeof S
 }
 
 export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription };
-

@@ -2,7 +2,6 @@ import { Label } from "@components/sh-label/label.component";
 import { Separator } from "@components/sh-separator/separator.component";
 import { cn } from "@lib/cn/cn.util";
 import { type VariantProps } from "class-variance-authority";
-import * as React from "react";
 import { useMemo } from "react";
 import { fieldVariants } from "./field.variant";
 
@@ -40,6 +39,33 @@ function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
+/**
+ * Componente de campo para compor `FieldLabel`, conteúdo e mensagens auxiliares/erros. Suporta orientações `vertical`, `horizontal` e `responsive`.
+ * Use `FieldError` com `errors` para exibir mensagens de validação acessíveis via `role="alert"`.
+ *
+ * @param orientation - Orientação do layout do campo: `"vertical"` (padrão), `"horizontal"` ou `"responsive"`.
+ * @param className - Classes CSS adicionais aplicadas ao elemento raiz.
+ *
+ * @example
+ * // Campo vertical com label, input e descrição
+ * <Field>
+ *   <FieldLabel htmlFor="nome">Nome completo</FieldLabel>
+ *   <FieldContent>
+ *     <Input id="nome" placeholder="Digite seu nome" />
+ *   </FieldContent>
+ *   <FieldDescription>Informe o nome como aparece no documento.</FieldDescription>
+ * </Field>
+ *
+ * @example
+ * // Campo horizontal com mensagem de erro
+ * <Field orientation="horizontal">
+ *   <FieldLabel htmlFor="email">E-mail</FieldLabel>
+ *   <FieldContent>
+ *     <Input id="email" aria-invalid="true" />
+ *   </FieldContent>
+ *   <FieldError errors={[{ message: "E-mail é obrigatório" }]} />
+ * </Field>
+ */
 function Field({ className, orientation = "vertical", ...props }: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
   return <div role="group" data-slot="field" data-orientation={orientation} className={cn(fieldVariants({ orientation }), className)} {...props} />;
 }
@@ -153,5 +179,32 @@ function FieldError({
   );
 }
 
-export { Field, FieldContent, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSeparator, FieldSet, FieldTitle };
+function FieldErrorState({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="field-error-state"
+      className={cn(
+        "pointer-events-none absolute inset-0 rounded-xl transition-all",
+        "opacity-0 group-data-[invalid=true]/field:opacity-100",
+        "group-data-[invalid=true]/field:ring-2 group-data-[invalid=true]/field:ring-destructive/50",
+        "group-data-[invalid=true]/field:border group-data-[invalid=true]/field:border-destructive",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
+export {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldErrorState,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldTitle,
+};

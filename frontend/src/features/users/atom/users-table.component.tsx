@@ -11,15 +11,15 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check, Copy, Eye, Info, KeyRound, RefreshCw, Search, ShieldAlert, UserCheck, UserX } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import type { UserResponseDto } from "src/features/auth/molecule/auth.types";
-import { type UpdateUserProfileRequestDto } from "src/features/users/molecule/user.schema";
+import type { UserResponseDto } from "@features/auth/molecule/auth.types";
+import { type UpdateUserProfileRequestDto } from "@features/users/molecule/user.schema";
 import {
   activateUserAttempt,
   deactivateUserAttempt,
   getUsersList,
   resetPasswordAttempt,
   updateUserProfile,
-} from "src/features/users/services/user.service";
+} from "@features/users/services/user.service";
 import { UserDetailsModal } from "./users-detail.component";
 
 export function UsersTableComponent() {

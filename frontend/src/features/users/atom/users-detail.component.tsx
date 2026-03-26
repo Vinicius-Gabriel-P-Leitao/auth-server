@@ -33,9 +33,9 @@ import {
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
-import type { UserResponseDto } from "src/features/auth/molecule/auth.types";
-import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "src/features/users/molecule/user.schema";
-import { updateUserRoles } from "src/features/users/services/user.service";
+import type { UserResponseDto } from "@features/auth/molecule/auth.types";
+import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "@features/users/molecule/user.schema";
+import { updateUserRoles } from "@features/users/services/user.service";
 
 export function UserDetailsModal({
   open,
@@ -442,9 +442,7 @@ export function UserDetailsModal({
                         </div>
 
                         <div>
-                          <span className="text-xl sm:text-2xl font-black text-indigo-950 mb-1 block tracking-tight">
-                            Regras do Modelo Híbrido
-                          </span>
+                          <span className="text-xl sm:text-2xl font-black text-indigo-950 mb-1 block tracking-tight">Regras do Modelo Híbrido</span>
                           <p className="text-xs sm:text-sm text-indigo-700/70 font-medium">
                             Configure a frequência exigida no escritório para este colaborador.
                           </p>
@@ -786,9 +784,7 @@ export function UserDetailsModal({
                             variant="default"
                             className="h-11 px-6 rounded-xl font-black text-xs shadow-lg shadow-gray-200 bg-gray-900 hover:bg-black transition-all flex items-center gap-2"
                             disabled={
-                              isUpdatingRoles ||
-                              isPending ||
-                              JSON.stringify([...selectedRoles].sort()) === JSON.stringify([...user.roles].sort())
+                              isUpdatingRoles || isPending || JSON.stringify([...selectedRoles].sort()) === JSON.stringify([...user.roles].sort())
                             }
                             onClick={async () => {
                               try {
@@ -816,9 +812,7 @@ export function UserDetailsModal({
 
               {/* FLOATING ACTION BAR FOR SUBMIT */}
               <div className="p-5 md:px-8 md:py-6 bg-white border-t border-gray-100 flex items-center justify-between shrink-0 shadow-[0_-5px_20px_rgba(0,0,0,0.02)] z-20 relative mt-auto">
-                <span className="text-sm font-bold text-gray-400 hidden sm:block">
-                  Atenção às alterações realizadas antes de persistir.
-                </span>
+                <span className="text-sm font-bold text-gray-400 hidden sm:block">Atenção às alterações realizadas antes de persistir.</span>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                   <Button
                     type="button"
@@ -834,11 +828,7 @@ export function UserDetailsModal({
                     className="h-12 w-full sm:w-auto rounded-xl px-8 font-black text-sm shadow-lg shadow-primary-200/50 bg-primary-600 hover:bg-primary-700 transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                     disabled={!form.formState.isValid || form.formState.isSubmitting || isPending}
                   >
-                    {form.formState.isSubmitting || isPending ? (
-                      <Spinner className="w-4 h-4 mr-2.5" />
-                    ) : (
-                      <Save className="w-4 h-4 mr-2.5" />
-                    )}
+                    {form.formState.isSubmitting || isPending ? <Spinner className="w-4 h-4 mr-2.5" /> : <Save className="w-4 h-4 mr-2.5" />}
                     Persistir Alterações
                   </Button>
                 </div>

@@ -10,8 +10,8 @@ import { Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { changePasswordSchema, type ChangePasswordFormData } from "src/features/auth/molecule/auth.schema";
-import { changePasswordAttempt } from "src/features/auth/services/auth.service";
+import { changePasswordSchema, type ChangePasswordFormData } from "@features/auth/molecule/auth.schema";
+import { changePasswordAttempt } from "@features/auth/services/auth.service";
 
 export function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);
@@ -40,8 +40,7 @@ export function ChangePasswordDialog() {
   };
 
   const mutation = useMutation({
-    mutationFn: (data: ChangePasswordFormData) =>
-      changePasswordAttempt({ oldPassword: data.oldPassword, newPassword: data.newPassword }),
+    mutationFn: (data: ChangePasswordFormData) => changePasswordAttempt({ oldPassword: data.oldPassword, newPassword: data.newPassword }),
     onSuccess: () => {
       toast.success("Sua senha foi alterada com sucesso!");
       handleOpenChange(false);
@@ -170,11 +169,7 @@ export function ChangePasswordDialog() {
               <Button type="button" variant="ghost" onClick={() => handleOpenChange(false)}>
                 Cancelar
               </Button>
-              <Button
-                type="submit"
-                disabled={!form.formState.isValid || mutation.isPending}
-                className="bg-amber-600 hover:bg-amber-700 text-white"
-              >
+              <Button type="submit" disabled={!form.formState.isValid || mutation.isPending} className="bg-amber-600 hover:bg-amber-700 text-white">
                 {mutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ShieldCheck className="w-4 h-4 mr-2" />}
                 Confirmar
               </Button>

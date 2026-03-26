@@ -1,7 +1,7 @@
 import { axiosClient } from "@lib/axios/axios.util";
-import type { UserResponseDto } from "src/features/auth/molecule/auth.types";
-import type { UpdateUserProfileRequestDto } from "src/features/users/molecule/user.schema";
-import type { PaginatedResponseDto, RegisterRequestDto, RegisterResponseDto } from "src/features/users/molecule/user.types";
+import type { UserResponseDto } from "@features/auth/molecule/auth.types";
+import type { UpdateUserProfileRequestDto } from "@features/users/molecule/user.schema";
+import type { PaginatedResponseDto, RegisterRequestDto, RegisterResponseDto } from "@features/users/molecule/user.types";
 
 /**
  * Registra um novo administrador. Somente usuários com Role.ADMIN podem fazer isso.
