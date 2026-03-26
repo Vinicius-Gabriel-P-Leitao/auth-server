@@ -9,6 +9,34 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/sh-popover/
 import { type DatePickerProps } from "./date-picker.prop";
 import { utcDateSchema } from "@lib/schema/date.schema";
 
+/**
+ * Seletor de data composto por `Button`, `Popover` e `Calendar`. O valor recebido e emitido usa o formato `YYYY-MM-DD` (string ISO).
+ * Suporta restrições de intervalo via `min`/`max` e permite limpar a seleção. Use textos de `placeholder` descritivos para acessibilidade.
+ *
+ * @param value - Data selecionada no formato `YYYY-MM-DD` ou objeto `Date`. Pode ser `null` para indicar ausência de seleção.
+ * @param onChange - Callback chamado ao selecionar ou limpar uma data. Recebe a string `YYYY-MM-DD` ou `null`.
+ * @param placeholder - Texto exibido quando nenhuma data está selecionada. Padrão: `"Selecione uma data"`.
+ * @param disabled - Quando `true`, desabilita o botão de abertura do calendário.
+ * @param className - Classes CSS adicionais aplicadas ao botão de trigger.
+ * @param min - Data mínima permitida no formato `YYYY-MM-DD`. Datas anteriores ficam desabilitadas no calendário.
+ * @param max - Data máxima permitida no formato `YYYY-MM-DD`. Datas posteriores ficam desabilitadas no calendário.
+ *
+ * @example
+ * // Uso básico com callback de mudança
+ * <DatePicker
+ *   placeholder="Selecione o prazo"
+ *   onChange={(date) => console.log(date)}
+ * />
+ *
+ * @example
+ * // Seletor com intervalo restrito e valor inicial
+ * <DatePicker
+ *   value="2024-06-15"
+ *   min="2024-01-01"
+ *   max="2024-12-31"
+ *   onChange={(date) => setValue(date)}
+ * />
+ */
 export function DatePicker({ value, onChange, placeholder = "Selecione uma data", disabled, className, min, max }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -50,19 +78,19 @@ export function DatePicker({ value, onChange, placeholder = "Selecione uma data"
           variant={"outline"}
           disabled={disabled}
           className={cn(
-            "w-full justify-start text-left font-bold h-12 rounded-xl bg-slate-50 border-slate-200 transition-all hover:border-primary/30 hover:bg-white",
-            !date && "text-slate-400 font-semibold",
+            "w-full justify-start text-left font-bold h-12 rounded-xl bg-background border border-input transition-all hover:border-primary/30 hover:bg-accent",
+            !date && "text-muted-foreground font-semibold",
             className,
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 text-primary/60" />
           <span className="flex-1 truncate">{date ? format(date, "dd/MM/yyyy", { locale: ptBR }) : placeholder}</span>
           {date && !disabled && (
-            <X className="ml-2 h-4 w-4 text-slate-400 hover:text-danger transition-colors cursor-pointer" onClick={handleClear} />
+            <X className="ml-2 h-4 w-4 text-muted-foreground hover:text-destructive transition-colors cursor-pointer" onClick={handleClear} />
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 rounded-2xl border-slate-200 shadow-2xl" align="start">
+      <PopoverContent className="w-auto p-0 rounded-2xl border border-input shadow-2xl" align="start">
         <Calendar
           mode="single"
           selected={date}

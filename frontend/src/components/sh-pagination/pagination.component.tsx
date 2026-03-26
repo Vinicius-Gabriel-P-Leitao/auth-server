@@ -1,9 +1,37 @@
-import * as React from "react";
-import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
-import { cn } from "@lib/cn/cn.util";
-import { buttonVariants } from "@components/sh-button/button.variant";
 import { type Button } from "@components/sh-button/button.component";
+import { buttonVariants } from "@components/sh-button/button.variant";
+import { cn } from "@lib/cn/cn.util";
+import { ChevronLeftIcon, ChevronRightIcon, MoreHorizontalIcon } from "lucide-react";
 
+/**
+ * Componente de paginação navegacional baseado em elementos semânticos `<nav>` e `<a>`. Use `PaginationLink` com `isActive` para marcar a página atual (`aria-current="page"`).
+ * `PaginationPrevious` e `PaginationNext` já incluem `aria-label` acessíveis automaticamente.
+ *
+ * @param className - Classes CSS adicionais aplicadas ao elemento `<nav>`.
+ * @param props - Demais props nativas do elemento `<nav>`.
+ *
+ * @example
+ * // Paginação básica com anterior, links e próxima
+ * <Pagination>
+ *   <PaginationContent>
+ *     <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
+ *     <PaginationItem><PaginationLink href="#" isActive>1</PaginationLink></PaginationItem>
+ *     <PaginationItem><PaginationNext href="#" /></PaginationItem>
+ *   </PaginationContent>
+ * </Pagination>
+ *
+ * @example
+ * // Paginação com reticências para muitas páginas
+ * <Pagination>
+ *   <PaginationContent>
+ *     <PaginationItem><PaginationPrevious href="#" /></PaginationItem>
+ *     <PaginationItem><PaginationLink href="#">1</PaginationLink></PaginationItem>
+ *     <PaginationItem><PaginationEllipsis /></PaginationItem>
+ *     <PaginationItem><PaginationLink href="#">10</PaginationLink></PaginationItem>
+ *     <PaginationItem><PaginationNext href="#" /></PaginationItem>
+ *   </PaginationContent>
+ * </Pagination>
+ */
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
   return (
     <nav
@@ -29,6 +57,11 @@ type PaginationLinkProps = {
 } & Pick<React.ComponentProps<typeof Button>, "size"> &
   React.ComponentProps<"a">;
 
+/**
+ * @param isActive - Quando `true`, aplica `aria-current="page"` e estilo de destaque ao link.
+ * @param size - Tamanho do botão herdado de `buttonVariants`. Padrão: `"icon"`.
+ * @param className - Classes CSS adicionais.
+ */
 function PaginationLink({ className, isActive, size = "icon", ...props }: PaginationLinkProps) {
   return (
     <a
@@ -47,18 +80,18 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
   );
 }
 
-function PaginationPrevious({ className, size: _size, ...props }: React.ComponentProps<typeof PaginationLink>) {
+function PaginationPrevious({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
-    <PaginationLink aria-label="Go to previous page" size="default" className={cn("gap-1 px-2.5 sm:pl-2.5", className)} {...props}>
+    <PaginationLink aria-label="Go to previous pages" size="default" className={cn("gap-1 px-2.5 sm:pl-2.5", className)} {...props}>
       <ChevronLeftIcon />
       <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   );
 }
 
-function PaginationNext({ className, size: _size, ...props }: React.ComponentProps<typeof PaginationLink>) {
+function PaginationNext({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
-    <PaginationLink aria-label="Go to next page" size="default" className={cn("gap-1 px-2.5 sm:pr-2.5", className)} {...props}>
+    <PaginationLink aria-label="Go to next pages" size="default" className={cn("gap-1 px-2.5 sm:pr-2.5", className)} {...props}>
       <span className="hidden sm:block">Next</span>
       <ChevronRightIcon />
     </PaginationLink>
@@ -74,4 +107,4 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span"
   );
 }
 
-export { Pagination, PaginationContent, PaginationLink, PaginationItem, PaginationPrevious, PaginationNext, PaginationEllipsis };
+export { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious };

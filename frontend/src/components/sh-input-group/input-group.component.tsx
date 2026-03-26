@@ -1,4 +1,3 @@
-import * as React from "react";
 import { type VariantProps } from "class-variance-authority";
 import { inputGroupAddonVariants, inputGroupButtonVariants } from "./input-group.variant";
 import { cn } from "@lib/cn/cn.util";
@@ -6,6 +5,30 @@ import { Button } from "@components/sh-button/button.component";
 import { Input } from "@components/sh-input/input.component";
 import { Textarea } from "@components/sh-textarea/textarea.component";
 
+/**
+ * Grupo visual para inputs com addons (prefixo/sufixo) e botões inline. Use `InputGroupAddon` para ícones ou textos e `InputGroupButton` para ações internas.
+ * O foco no grupo é gerenciado automaticamente. O estado de erro é propagado visualmente via `aria-invalid` no controle interno.
+ * @param className - Classes CSS adicionais para personalizar o estilo do grupo
+ * @param props - Demais propriedades HTML do elemento `div` subjacente
+ * @example
+ * // Prefixo com texto e input de usuário
+ * <InputGroup className="w-72">
+ *   <InputGroupAddon>
+ *     <InputGroupText>@</InputGroupText>
+ *   </InputGroupAddon>
+ *   <InputGroupInput placeholder="usuário" />
+ * </InputGroup>
+ * @example
+ * // Sufixo com botão de ação (ex.: revelar senha)
+ * <InputGroup className="w-72">
+ *   <InputGroupInput type="password" placeholder="Senha" />
+ *   <InputGroupAddon align="inline-end">
+ *     <InputGroupButton aria-label="Mostrar senha">
+ *       <EyeIcon />
+ *     </InputGroupButton>
+ *   </InputGroupAddon>
+ * </InputGroup>
+ */
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
@@ -92,4 +115,3 @@ function InputGroupTextarea({ className, ...props }: React.ComponentProps<"texta
 }
 
 export { InputGroup, InputGroupAddon, InputGroupButton, InputGroupText, InputGroupInput, InputGroupTextarea };
-

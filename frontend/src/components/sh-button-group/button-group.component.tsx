@@ -1,9 +1,33 @@
-import { type VariantProps } from "class-variance-authority";
-import { buttonGroupVariants } from "./button-group.variant";
-import { Slot } from "radix-ui";
 import { Separator } from "@components/sh-separator/separator.component";
 import { cn } from "@lib/cn/cn.util";
+import { type VariantProps } from "class-variance-authority";
+import { Slot } from "radix-ui";
+import { buttonGroupVariants } from "./button-group.variant";
 
+/**
+ * Agrupador visual para botões e addons relacionados. Suporta orientação `horizontal` (padrão) e `vertical` via prop `orientation`.
+ * Use `ButtonGroupSeparator` entre itens para separação visual. O elemento raiz possui `role="group"` para acessibilidade.
+ *
+ * @param orientation - Direção do grupo: `"horizontal"` (padrão) ou `"vertical"`.
+ * @param className - Classes CSS adicionais aplicadas ao elemento raiz.
+ * @param props - Demais props nativas de `<div>`.
+ *
+ * @example
+ * // Grupo horizontal de paginação
+ * <ButtonGroup>
+ *   <Button variant="outline">Anterior</Button>
+ *   <ButtonGroupSeparator />
+ *   <Button variant="outline">Próximo</Button>
+ * </ButtonGroup>
+ *
+ * @example
+ * // Grupo vertical de opções
+ * <ButtonGroup orientation="vertical">
+ *   <Button variant="outline">Opção A</Button>
+ *   <ButtonGroupSeparator orientation="horizontal" />
+ *   <Button variant="outline">Opção B</Button>
+ * </ButtonGroup>
+ */
 function ButtonGroup({ className, orientation, ...props }: React.ComponentProps<"div"> & VariantProps<typeof buttonGroupVariants>) {
   return (
     <div
@@ -16,6 +40,27 @@ function ButtonGroup({ className, orientation, ...props }: React.ComponentProps<
   );
 }
 
+/**
+ * Elemento de texto ou addon dentro de um `ButtonGroup`. Renderiza um `<div>` estilizado como addon.
+ * Use `asChild` para renderizar como elemento filho via Radix Slot.
+ *
+ * @param className - Classes CSS adicionais.
+ * @param asChild - Quando `true`, renderiza o elemento filho diretamente via Slot (padrão: `false`).
+ * @param props - Demais props nativas de `<div>`.
+ *
+ * @example
+ * // Addon com ícone e texto
+ * <ButtonGroupText>
+ *   <SearchIcon />
+ *   Buscar
+ * </ButtonGroupText>
+ *
+ * @example
+ * // Addon como slot customizado
+ * <ButtonGroupText asChild>
+ *   <span>Prefixo</span>
+ * </ButtonGroupText>
+ */
 function ButtonGroupText({
   className,
   asChild = false,
@@ -36,6 +81,22 @@ function ButtonGroupText({
   );
 }
 
+/**
+ * Separador visual entre itens de um `ButtonGroup`. Por padrão, orientação `"vertical"` (linha entre botões horizontais).
+ * Use `orientation="horizontal"` dentro de um grupo vertical.
+ *
+ * @param orientation - Orientação do separador: `"vertical"` (padrão) ou `"horizontal"`.
+ * @param className - Classes CSS adicionais.
+ * @param props - Demais props do componente `Separator`.
+ *
+ * @example
+ * // Separador padrão (vertical) entre botões
+ * <ButtonGroupSeparator />
+ *
+ * @example
+ * // Separador horizontal em grupo vertical
+ * <ButtonGroupSeparator orientation="horizontal" />
+ */
 function ButtonGroupSeparator({ className, orientation = "vertical", ...props }: React.ComponentProps<typeof Separator>) {
   return (
     <Separator
@@ -50,5 +111,4 @@ function ButtonGroupSeparator({ className, orientation = "vertical", ...props }:
   );
 }
 
-export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText, buttonGroupVariants };
-
+export { ButtonGroup, ButtonGroupSeparator, ButtonGroupText };

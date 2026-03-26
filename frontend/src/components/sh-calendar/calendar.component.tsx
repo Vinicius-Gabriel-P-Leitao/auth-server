@@ -6,6 +6,31 @@ import { cn } from "@lib/cn/cn.util";
 import { Button } from "@components/sh-button/button.component";
 import { buttonVariants } from "@components/sh-button/button.variant";
 
+/**
+ * Calendário interativo baseado em `react-day-picker`. Suporta modos `single` e `range`, exibe dropdown de mês/ano e é compatível com localização via `locale`.
+ * Normalmente usado composto dentro de `DatePicker`. Defina `locale` quando necessário para internacionalização.
+ *
+ * @param className - Classes CSS adicionais aplicadas ao elemento raiz do `DayPicker`.
+ * @param classNames - Sobrescreve classes internas individuais do `DayPicker` (ex: `day`, `nav`, `month`).
+ * @param showOutsideDays - Exibe dias pertencentes ao mês anterior/seguinte. Padrão: `true`.
+ * @param captionLayout - Layout do cabeçalho: `"dropdown"` exibe seletores de mês e ano; `"label"` exibe apenas texto. Padrão: `"dropdown"`.
+ * @param buttonVariant - Variante visual dos botões de navegação. Aceita qualquer variante de `Button`. Padrão: `"ghost"`.
+ * @param formatters - Sobrescreve funções de formatação do `DayPicker` (ex: `formatMonthDropdown`).
+ * @param components - Substitui componentes internos do `DayPicker` (ex: `DayButton`, `Chevron`).
+ *
+ * @example
+ * // Seleção de data única com localização em pt-BR
+ * import { ptBR } from "date-fns/locale";
+ * <Calendar mode="single" selected={new Date()} locale={ptBR} />
+ *
+ * @example
+ * // Seleção de intervalo de datas
+ * <Calendar
+ *   mode="range"
+ *   selected={{ from: new Date("2024-06-10"), to: new Date("2024-06-17") }}
+ *   className="rounded-md border shadow-sm"
+ * />
+ */
 function Calendar({
   className,
   classNames,
@@ -144,4 +169,3 @@ function CalendarDayButton({ className, day, modifiers, ...props }: React.Compon
 }
 
 export { Calendar, CalendarDayButton };
-

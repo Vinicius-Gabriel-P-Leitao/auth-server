@@ -1,11 +1,40 @@
 import { cn } from "@lib/cn/cn.util";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
-import * as React from "react";
 
 function TooltipProvider({ delayDuration = 0, ...props }: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
   return <TooltipPrimitive.Provider data-slot="tooltip-provider" delayDuration={delayDuration} {...props} />;
 }
 
+/**
+ * Dica flutuante baseada em Radix UI. Exibida ao passar o mouse (hover) ou focar via teclado. Envolva sempre com `TooltipProvider`.
+ * Use `asChild` no `TooltipTrigger` para compor com outros componentes. Não use para informações críticas (não acessível em touch).
+ *
+ * @param props.open - Controla o estado aberto/fechado de forma controlada.
+ * @param props.defaultOpen - Estado inicial aberto (modo não controlado).
+ * @param props.onOpenChange - Callback chamado quando o estado de abertura muda.
+ *
+ * @example
+ * // Uso básico com botão
+ * <TooltipProvider>
+ *   <Tooltip>
+ *     <TooltipTrigger asChild>
+ *       <Button>Passe o mouse</Button>
+ *     </TooltipTrigger>
+ *     <TooltipContent>Dica útil</TooltipContent>
+ *   </Tooltip>
+ * </TooltipProvider>
+ *
+ * @example
+ * // Controlado externamente
+ * <TooltipProvider>
+ *   <Tooltip open={open} onOpenChange={setOpen}>
+ *     <TooltipTrigger asChild>
+ *       <span className="underline cursor-help">Termo técnico</span>
+ *     </TooltipTrigger>
+ *     <TooltipContent>Definição do termo</TooltipContent>
+ *   </Tooltip>
+ * </TooltipProvider>
+ */
 function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
@@ -34,4 +63,3 @@ function TooltipContent({ className, sideOffset = 0, children, ...props }: React
 }
 
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger };
-
