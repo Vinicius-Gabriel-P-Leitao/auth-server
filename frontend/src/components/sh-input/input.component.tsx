@@ -1,22 +1,25 @@
-import * as React from "react";
-
+import { inputVariants } from "./input.variant";
+import { type InputProps } from "./input.prop";
 import { cn } from "@lib/cn/cn.util";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        "focus-visible:border-primary focus-visible:ring-primary/30 focus-visible:ring-[3px]",
-        "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-        "[&:-webkit-autofill]:[transition:color_9999s_ease-out,background-color_9999s_ease-out]",
-        className,
-      )}
-      {...props}
-    />
-  );
+/**
+ * Campo de texto básico. Suporta variantes `default` e `glass` (para fundos escuros translúcidos) e dois tamanhos.
+ * Sinalize erros via `aria-invalid`. Sempre associe um `<Label>` para acessibilidade.
+ *
+ * @param variant - Estilo visual: `"default"` (fundo claro) ou `"glass"` (para fundos escuros translúcidos).
+ * @param size - Tamanho: `"default"` (h-12) ou `"sm"` (h-8 compacto).
+ * @param type - Tipo HTML do input (text, email, password, number, etc.).
+ * @param className - Classes CSS adicionais mescladas via `cn`.
+ * @param props - Demais props nativas do elemento `<input>`. Use `aria-invalid` para sinalizar erro.
+ *
+ * @example
+ * // Campo padrão com placeholder
+ * <Input placeholder="Digite aqui..." />
+ *
+ * @example
+ * // Campo glass para uso sobre fundos escuros, com erro sinalizado
+ * <Input variant="glass" aria-invalid placeholder="Usuário inválido" />
+ */
+export function Input({ className, variant, size, type, ...props }: InputProps) {
+  return <input type={type} data-slot="input" className={cn(inputVariants({ variant, size }), className)} {...props} />;
 }
-
-export { Input };

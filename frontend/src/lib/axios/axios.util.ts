@@ -1,9 +1,9 @@
-import axios, { AxiosError } from "axios";
-import type { InternalAxiosRequestConfig } from "axios";
-import { useAuthStore } from "../../store/auth.store";
+import axios from "axios";
+import type { InternalAxiosRequestConfig, AxiosError } from "axios";
+import { useAuthStore } from "@store/auth.store";
 import toast from "react-hot-toast";
-import { getErrorMessage } from "../api-error/api-error.util";
-import type { DataObjectError, UserResponseDto, UserSessionResponseDto } from "../../modules/auth/molecule/auth.types";
+import { getErrorMessage } from "@lib/api-error/api-error.util";
+import type { DataObjectError, UserResponseDto, UserSessionResponseDto } from "@features/auth/molecule/auth.types";
 
 export const axiosClient = axios.create({
   baseURL: "",
@@ -101,6 +101,14 @@ axiosClient.interceptors.response.use(
 
     if (status === 403) {
       toast.error(getErrorMessage(error, "Você não tem permissão para realizar esta ação."));
+    }
+
+    if (status && status >= 400 && status !== 401 && status !== 403) {
+      if (status >= 500 || status === 404) {
+        const searchParams = new URLSearchParams();
+        searchParams.set("error_code", status.toString());
+        window.location.href = `/?${searchParams.toString()}`;
+      }
     }
 
     return Promise.reject(error);

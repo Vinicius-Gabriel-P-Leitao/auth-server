@@ -1,11 +1,49 @@
-"use client";
-
-import * as React from "react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
 
 import { cn } from "@lib/cn/cn.util";
 import { Button } from "@components/sh-button/button.component";
 
+/**
+ * Dialog de alerta baseado em Radix UI. Use para ações destrutivas ou irreversíveis que exigem confirmação explícita.
+ * O foco é preso no conteúdo até que o usuário decida. Sempre inclua `AlertDialogTitle` e `AlertDialogDescription` para acessibilidade.
+ *
+ * @param open - Controla o estado de abertura do dialog (modo controlado).
+ * @param defaultOpen - Estado inicial de abertura (modo não controlado).
+ * @param onOpenChange - Callback chamado quando o estado de abertura muda.
+ *
+ * @example
+ * // Uso básico com trigger
+ * <AlertDialog>
+ *   <AlertDialogTrigger asChild>
+ *     <Button variant="destructive">Excluir</Button>
+ *   </AlertDialogTrigger>
+ *   <AlertDialogContent>
+ *     <AlertDialogHeader>
+ *       <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+ *       <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+ *     </AlertDialogHeader>
+ *     <AlertDialogFooter>
+ *       <AlertDialogCancel>Cancelar</AlertDialogCancel>
+ *       <AlertDialogAction>Excluir</AlertDialogAction>
+ *     </AlertDialogFooter>
+ *   </AlertDialogContent>
+ * </AlertDialog>
+ *
+ * @example
+ * // Modo controlado
+ * const [open, setOpen] = useState(false);
+ * <AlertDialog open={open} onOpenChange={setOpen}>
+ *   <AlertDialogContent>
+ *     <AlertDialogHeader>
+ *       <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
+ *     </AlertDialogHeader>
+ *     <AlertDialogFooter>
+ *       <AlertDialogCancel>Não</AlertDialogCancel>
+ *       <AlertDialogAction onClick={() => setOpen(false)}>Sim</AlertDialogAction>
+ *     </AlertDialogFooter>
+ *   </AlertDialogContent>
+ * </AlertDialog>
+ */
 function AlertDialog({ ...props }: React.ComponentProps<typeof AlertDialogPrimitive.Root>) {
   return <AlertDialogPrimitive.Root data-slot="alert-dialog" {...props} />;
 }

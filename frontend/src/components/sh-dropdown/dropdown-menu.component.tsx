@@ -1,11 +1,41 @@
-"use client";
-
-import * as React from "react";
+import { cn } from "@lib/cn/cn.util";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 
-import { cn } from "@lib/cn/cn.util";
-
+/**
+ * Menu de ações flutuante baseado em Radix UI. Use para agrupar ações secundárias acessadas por um botão gatilho.
+ * Evite itens apenas com ícones sem rótulo acessível; use texto visível ou `aria-label`.
+ *
+ * @param open - Controla o estado aberto/fechado de forma controlada.
+ * @param onOpenChange - Callback disparado quando o estado de abertura muda.
+ * @param defaultOpen - Estado inicial de abertura quando não controlado. Padrão: `false`.
+ * @param modal - Quando `true`, bloqueia o scroll da página enquanto o menu está aberto. Padrão: `true`.
+ * @param children - Deve conter `DropdownMenuTrigger` e `DropdownMenuContent`.
+ *
+ * @example
+ * // Menu simples com itens de navegação
+ * <DropdownMenu>
+ *   <DropdownMenuTrigger asChild>
+ *     <Button variant="outline">Opções</Button>
+ *   </DropdownMenuTrigger>
+ *   <DropdownMenuContent>
+ *     <DropdownMenuItem>Perfil</DropdownMenuItem>
+ *     <DropdownMenuItem>Sair</DropdownMenuItem>
+ *   </DropdownMenuContent>
+ * </DropdownMenu>
+ *
+ * @example
+ * // Menu controlado externamente
+ * const [open, setOpen] = useState(false);
+ * <DropdownMenu open={open} onOpenChange={setOpen}>
+ *   <DropdownMenuTrigger asChild>
+ *     <Button>Menu</Button>
+ *   </DropdownMenuTrigger>
+ *   <DropdownMenuContent>
+ *     <DropdownMenuItem onSelect={() => setOpen(false)}>Fechar</DropdownMenuItem>
+ *   </DropdownMenuContent>
+ * </DropdownMenu>
+ */
 function DropdownMenu({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
 }
@@ -25,7 +55,7 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }: React.Comp
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md",
+          "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md p-1 shadow-md tactile-border",
           className,
         )}
         {...props}
@@ -174,18 +204,18 @@ function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<ty
 
 export {
   DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuLabel,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 };

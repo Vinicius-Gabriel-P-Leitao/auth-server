@@ -1,10 +1,48 @@
-import * as React from "react";
-
 import { cn } from "@lib/cn/cn.util";
 
+/**
+ * Contêiner de conteúdo estruturado composto por `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent` e `CardFooter`.
+ * Use `CardAction` para posicionar botões de ação no cabeçalho. Não possui variantes de acessibilidade próprias; defina `role` conforme o contexto.
+ *
+ * @param className - Classes CSS adicionais aplicadas ao elemento raiz.
+ *
+ * @example
+ * // Card básico com cabeçalho, conteúdo e rodapé
+ * <Card className="w-[350px]">
+ *   <CardHeader>
+ *     <CardTitle>Processo 001/2024</CardTitle>
+ *     <CardDescription>Aposentadoria por tempo de contribuição</CardDescription>
+ *   </CardHeader>
+ *   <CardContent>
+ *     <p>Requerente: João da Silva</p>
+ *   </CardContent>
+ *   <CardFooter>
+ *     <Button className="w-full">Analisar</Button>
+ *   </CardFooter>
+ * </Card>
+ *
+ * @example
+ * // Card com ação no cabeçalho via CardAction
+ * <Card className="w-[350px]">
+ *   <CardHeader>
+ *     <CardTitle>Notificações</CardTitle>
+ *     <CardDescription>Você tem 3 mensagens não lidas.</CardDescription>
+ *     <CardAction>
+ *       <Button variant="ghost" size="icon" aria-label="Fechar">✕</Button>
+ *     </CardAction>
+ *   </CardHeader>
+ *   <CardContent>
+ *     <p>Nova mensagem de Maria Souza</p>
+ *   </CardContent>
+ * </Card>
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="card" className={cn("bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm", className)} {...props} />
+    <div
+      data-slot="card"
+      className={cn("bg-card text-card-foreground flex flex-col gap-6 rounded-xl tactile-border py-6 shadow-sm", className)}
+      {...props}
+    />
   );
 }
 
