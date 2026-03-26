@@ -10,8 +10,8 @@ import { Eye, EyeOff, KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { changePasswordSchema, type ChangePasswordFormData } from "@modules/auth/molecule/auth.schema";
-import { changePasswordAttempt } from "@modules/auth/services/auth.service";
+import { changePasswordSchema, type ChangePasswordFormData } from "src/features/auth/molecule/auth.schema";
+import { changePasswordAttempt } from "src/features/auth/services/auth.service";
 
 export function ChangePasswordDialog() {
   const [open, setOpen] = useState(false);

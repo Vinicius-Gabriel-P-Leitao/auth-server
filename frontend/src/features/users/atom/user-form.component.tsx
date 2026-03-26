@@ -11,8 +11,8 @@ import { CheckCircle2, Copy, Loader2, ShieldPlus, UserPlus } from "lucide-react"
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { registerAdminSchema, registerUserSchema } from "@modules/users/molecule/user.schema";
-import { registerAdminAttempt, registerUserAttempt } from "@modules/users/services/user.service";
+import { registerAdminSchema, registerUserSchema } from "src/features/users/molecule/user.schema";
+import { registerAdminAttempt, registerUserAttempt } from "src/features/users/services/user.service";
 
 type Props = {
   role: "ADMIN" | "USER";

@@ -1,6 +1,6 @@
 import { LogOut, Users, Shield, BookOpen } from "lucide-react";
 import { useAuthStore } from "@store/auth.store";
-import { logoutAttempt } from "@modules/auth/services/auth.service";
+import { logoutAttempt } from "src/features/auth/services/auth.service";
 import { Button } from "@components/sh-button/button.component";
 import { CreateUserDialog } from "./atom/user-form.component";
 import { UsersTableComponent } from "./atom/users-table.component";

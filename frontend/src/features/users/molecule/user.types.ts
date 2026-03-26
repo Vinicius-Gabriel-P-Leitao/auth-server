@@ -1,4 +1,4 @@
-import type { UserResponseDto } from "@modules/auth/molecule/auth.types";
+import type { UserResponseDto } from "src/features/auth/molecule/auth.types";
 
 export type RegisterResponseDto = UserResponseDto;
 

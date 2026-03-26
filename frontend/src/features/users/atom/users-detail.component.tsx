@@ -33,9 +33,9 @@ import {
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
-import type { UserResponseDto } from "@modules/auth/molecule/auth.types";
-import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "@modules/users/molecule/user.schema";
-import { updateUserRoles } from "@modules/users/services/user.service";
+import type { UserResponseDto } from "src/features/auth/molecule/auth.types";
+import { type UpdateUserProfileRequestDto, updateUserProfileSchema } from "src/features/users/molecule/user.schema";
+import { updateUserRoles } from "src/features/users/services/user.service";
 
 export function UserDetailsModal({
   open,

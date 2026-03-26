@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { registerAdminSchema } from "@modules/users/molecule/user.schema";
-import { loginSchema } from "@modules/auth/molecule/auth.schema";
-import { mockLoginResponseAdmin } from "@fixtures/auth.fixture";
+import { registerAdminSchema } from "@features/users/molecule/user.schema";
+import { loginSchema } from "@features/auth/molecule/auth.schema";
+import { mockLoginResponseAdmin } from "@fixtures/auth.seeder";
 
 describe("API Contract Validation", () => {
   describe("auth.types.ts Contract", () => {

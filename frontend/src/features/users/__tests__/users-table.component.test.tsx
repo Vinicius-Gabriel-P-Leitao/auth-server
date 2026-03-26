@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { UsersTableComponent } from "@modules/users/atom/users-table.component";
+import { UsersTableComponent } from "@features/users/atom/users-table.component";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import type * as Query from "@tanstack/react-query";
 
